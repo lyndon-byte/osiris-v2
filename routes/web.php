@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,7 +21,11 @@ use App\Http\Controllers\ProfileController;
 
 Route::get('/login',[UserController::class,'login']);
 
-Route::get('/accountconfirmation',[UserController::class,'accountconfirmation']);
+Route::get('/accountconfirmation',EmailVerificationPromptController::class);
+
+Auth::routes(['verify' => true]);
+
+Route::post('/sendemailverification',[EmailVerificationNotificationController::class,'store']);
 
 Route::get('/register', [UserController::class,'index']);
 

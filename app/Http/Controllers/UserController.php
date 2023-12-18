@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Validation\Rules\Password;
+
 
 
 class UserController extends Controller
@@ -37,15 +40,13 @@ class UserController extends Controller
 
        ]);
 
-       User::create($newUser);
+       $user = User::create($newUser);
 
+       event(new Registered($newUser));
+
+       Auth::login($user);
     } 
 
-    public function accountconfirmation(){
-
-      return Inertia::render('AccountConfirmation');
-
-    }
 
     public function login(){
 

@@ -23,11 +23,11 @@ function Login(){
     const [passwordSpecialChar,setPasswordSpecialChar] = useState(false)
     const [password_confirmation,setPassword_Confirmation] = useState("");
     const [inputErrors,setInputErrors] = useState("");
-    const [loader,setLoader] = useState(false);
 
     const getToken = async () =>{
 
        await axios.get('/sanctum/csrf-cookie');
+
     }
 
     const handleSubmit = async (e) =>{
@@ -51,6 +51,7 @@ function Login(){
             }).then(() =>{
 
                 window.location.href = '/accountconfirmation';
+                
             })        
       
 
