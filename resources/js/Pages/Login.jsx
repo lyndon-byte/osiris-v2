@@ -40,7 +40,7 @@ function Login(){
 
         e.preventDefault();
 
-        try{
+        
 
             await getToken();
 
@@ -48,13 +48,17 @@ function Login(){
 
                 window.location.href = '/home';
 
+            }).catch((error) => {
+
+                setInputErrors(error.response.data.errors)
+                if(error.response.data.message === 'Your email address is not verified.'){
+
+                    window.location.href = '/accountconfirmation';
+                }
+
             });
 
-        }catch(error){
-
-            setInputErrors(error.response.data.errors)
-
-        }
+        
 
     }
 

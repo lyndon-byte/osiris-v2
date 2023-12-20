@@ -5,13 +5,21 @@ import '/resources/css/spinner.css'
 import axios from "axios";
 
 
-function Login(status){
+function AccountConfirmation(status){
 
   
+        const [buttonStatus,setButtonStatus] = useState(false);
+    
         const sendEmailVerification = async () => {
+
+            setButtonStatus(true)
             
-            await axios.post('/sendemailverification');
-           
+            await axios.post('/sendemailverification').then(() => {
+
+                setButtonStatus(false)
+
+            });
+        
         }
 
         useEffect(() => {
@@ -39,7 +47,7 @@ function Login(status){
                                         <p className="card-text text-center mt-3">Please verify your email address</p>
                                         <p className="card-text text-center text-muted" style={{fontSize: "14px"}}>We have sent a verification link to {status.auth.user.email}</p>
                                         <p className="text-center text-muted" style={{fontSize: "14px"}}>Click on the link to complete the verification process</p>
-                                        <button className="btn btn-dark w-100 mt-3 mb-3" onClick={sendEmailVerification}>Resend Email</button>
+                                        <button className={buttonStatus ? 'btn btn-success w-100 mt-3 mb-3' : 'btn btn-dark w-100 mt-3 mb-3'} onClick={sendEmailVerification}>{buttonStatus ? 'Verification link was sent!' : 'Resend Email'}</button>
                                     </div>
                                 </div>
                             </div>
@@ -58,4 +66,4 @@ function Login(status){
 }
  
 
-export default Login
+export default AccountConfirmation;

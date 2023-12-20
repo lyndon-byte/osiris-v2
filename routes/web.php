@@ -28,13 +28,24 @@ Route::get('/',function(){
 
 });
 
+Route::get('/403',function(){
+
+    return Inertia::render('Error403');
+
+})->name('forbidden');
+
+
 Route::get('/userlogin',[UserController::class,'login']);
 
 Route::post('/authenticate',[AuthenticatedSessionController::class,'store']);
 
 Route::get('/accountconfirmation',EmailVerificationPromptController::class);
 
-Route::get('/home',[DashboardController::class,'dashboard']);
+Route::post('/signout',[AuthenticatedSessionController::class,'destroy']);
+
+Route::get('/home',[DashboardController::class,'dashboard'])->middleware(['auth','verified:emailnotverified'])->name('mainpage');
+
+Auth::routes(['login' => false]);
 
 Auth::routes(['verify' => true]);
 
