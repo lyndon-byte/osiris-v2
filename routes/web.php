@@ -6,6 +6,8 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -34,8 +36,18 @@ Route::get('/403',function(){
 
 })->name('forbidden');
 
+Route::get('/forgotpassword',function(){
 
-Route::get('/userlogin',[UserController::class,'login']);
+    return Inertia::render('ForgotPassword');
+
+});
+
+Route::post('/forgotpasswordprocess',[PasswordResetLinkController::class,'store']);
+
+Route::post('/resetpasswordprocess',[NewPasswordController::class,'store']);
+
+
+Route::get('/userlogin',[UserController::class,'login'])->name('userlogin');
 
 Route::post('/authenticate',[AuthenticatedSessionController::class,'store']);
 
@@ -43,9 +55,7 @@ Route::get('/accountconfirmation',EmailVerificationPromptController::class);
 
 Route::post('/signout',[AuthenticatedSessionController::class,'destroy']);
 
-Route::get('/home',[DashboardController::class,'dashboard'])->middleware(['auth','verified:emailnotverified'])->name('mainpage');
-
-Auth::routes(['login' => false]);
+Route::get('/home',[DashboardController::class,'dashboard'])->middleware(['auth','verified'])->name('mainpage');
 
 Auth::routes(['verify' => true]);
 

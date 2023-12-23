@@ -127,7 +127,7 @@ function Login(){
                                             <span className={inputErrors['password'] ? 'input-group-text bg-white border-start-0 border-danger' : 'input-group-text bg-white border-start-0 '} onClick={handleShowPassword}><i className={showPassword ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'}></i></span>
                                         </div>
                                         <div className="form-text text-danger" id="basic-addon4">{inputErrors['password']}</div>
-                                        <div className="form-text text-end mt-3" id="basic-addon4">  <a href="">Forgot Password?</a></div>
+                                        <div className="form-text text-end mt-3" id="basic-addon4">  <Link href="/forgotpassword">Forgot Password?</Link></div>
                                         
                                         <button className="btn btn-dark w-100 mt-4 rounded-1" type="submit">Sign In</button>
 

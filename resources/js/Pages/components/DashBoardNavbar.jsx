@@ -5,7 +5,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import axios from "axios";
 
 
-export default function DashboardNavbar(){
+export default function DashboardNavbar(props){
 
     const handleLogout = async () => {
 
@@ -32,7 +32,7 @@ export default function DashboardNavbar(){
                     
                        
                         <div className="ms-lg-auto">
-                        <DropdownButton drop="down-centered" variant="btn btn-outline-dark border-0" id="dropdown-item-button" title="Lyndon Cuartero">
+                        <DropdownButton drop="down-centered" variant="btn btn-outline-dark border-0" id="dropdown-item-button" title={props.name}>
 
                             
                             <Dropdown.Item as="button"><i class="fa-regular fa-user"></i> &nbsp; Profile</Dropdown.Item>
