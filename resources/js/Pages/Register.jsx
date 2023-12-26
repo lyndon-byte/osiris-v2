@@ -17,6 +17,7 @@ function Login(){
     const [email,setEmail] = useState("");
     const [password,setPassword] = useState("");
     const [passwordStrength,setPasswordStrength] = useState(false);
+    const [role,setRole] = useState('admin');
     const [passwordMax,setPasswordMax] = useState(false);
     const [passwordCapital,setPasswordCapital] = useState(false)
     const [passwordNum,setPasswordNum] = useState(false);
@@ -45,7 +46,8 @@ function Login(){
                 contactnumber,
                 email,
                 password,
-                password_confirmation
+                password_confirmation,
+                role
     
     
             }).then(() =>{

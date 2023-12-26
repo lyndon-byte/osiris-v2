@@ -50,6 +50,8 @@ export default function ForgotPassword(credential){
         
         await axios.post('/resetpasswordprocess',{token,email,password,password_confirmation})
             .then(() =>{
+                setPassword('')
+                setPassword_Confirmation('')
                 setShowLoading('hidden')
                 console.log('password was reset successfully')
                 setShowAlert(true)
@@ -155,7 +157,7 @@ export default function ForgotPassword(credential){
                             Your password was changed successfully
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="dark">Proceed to login</Button>
+                        <Button variant="dark" onClick={handleClose}>Proceed to login</Button>
                     </Modal.Footer>
                 </Modal>
                 <div className="container">

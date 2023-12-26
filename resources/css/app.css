@@ -9,8 +9,20 @@
 .navbar-brand{
 
     font-family: 'Barlow Condensed', sans-serif;
-
-
+   
 
 }
 
+.sidebarbtntext {
+
+
+    line-height:25px;
+
+}
+
+.material-icons {
+
+    display: inline-flex;
+    vertical-align: top;
+
+}

@@ -35,8 +35,8 @@ class UserController extends Controller
                     ->symbols()
           
             ],
-            'password_confirmation' => ['required','same:password']
-
+            'password_confirmation' => ['required','same:password'],
+            'role' => 'required'
 
        ]);
 

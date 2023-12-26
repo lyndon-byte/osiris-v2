@@ -7,7 +7,7 @@ import axios from "axios";
 
 import { useState } from "react";
 
-function Login(){
+function Login(status){
     
     const [showPassword,setShowPassword] = useState(false);
     const [email,setEmail] = useState("");
@@ -46,8 +46,14 @@ function Login(){
 
             await axios.post('/authenticate',{email,password}).then(() => {
 
-                window.location.href = '/home';
+               
 
+                window.location.href ='/home';
+
+               
+
+            console.log(status)
+                   
             }).catch((error) => {
 
                 setInputErrors(error.response.data.errors)

@@ -55,7 +55,11 @@ Route::get('/accountconfirmation',EmailVerificationPromptController::class);
 
 Route::post('/signout',[AuthenticatedSessionController::class,'destroy']);
 
-Route::get('/home',[DashboardController::class,'dashboard'])->middleware(['auth','verified'])->name('mainpage');
+Route::group(['middleware' => ['admin']], function(){
+
+    Route::get('/home',[DashboardController::class,'dashboard'])->middleware(['auth','verified'])->name('mainpage');
+    
+});
 
 Auth::routes(['verify' => true]);
 
