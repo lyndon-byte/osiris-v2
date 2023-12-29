@@ -58,6 +58,16 @@ Route::post('/signout',[AuthenticatedSessionController::class,'destroy']);
 Route::group(['middleware' => ['admin']], function(){
 
     Route::get('/home',[DashboardController::class,'dashboard'])->middleware(['auth','verified'])->name('mainpage');
+
+    Route::post('/getprofiledata',[ProfileController::class,'edit'])->middleware(['auth','verified']);
+    
+    Route::get('/adminprofile',function(){
+
+        return Inertia::render('AdminProfile');
+
+    })->middleware(['auth','verified'])->name('admin.profile');
+
+    Route::post('/editadminprofile',[ProfileController::class,'update'])->middleware(['auth']);
     
 });
 
@@ -67,7 +77,7 @@ Route::post('/sendemailverification',[EmailVerificationNotificationController::c
 
 Route::get('/register', [UserController::class,'index']);
 
-Route::post('/adduser', [UserController::class,'adduser']);
+Route::post('/adduser', [UserController::class,'addadminuser']);
 
 
 

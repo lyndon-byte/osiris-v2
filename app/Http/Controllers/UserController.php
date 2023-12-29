@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class UserController extends Controller
         return Inertia::render('Register');
     }
 
-    public function adduser(Request $request){
+    public function addadminuser(Request $request){
 
        $newUser = $request->validate([
 

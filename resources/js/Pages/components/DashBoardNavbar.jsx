@@ -3,8 +3,6 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Link, usePage } from "@inertiajs/react";
-
-
 import axios from "axios";
 
 
@@ -31,6 +29,19 @@ export default function DashboardNavbar(props){
 
     }
 
+    const handleShowProfile = async () => {
+
+
+        await axios.post('/getprofiledata').then(() => {
+
+            window.location.href = '/adminprofile';
+
+        });
+
+
+    }
+
+
     return (
         
         <>
@@ -42,7 +53,7 @@ export default function DashboardNavbar(props){
                 </Offcanvas.Header>
                 <Offcanvas.Body >
 
-                    <Link className={url === '/home' ? 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start bg-secondary' : 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start '} ><span className="material-symbols-outlined material-icons" >widgets</span>&nbsp; <span className="sidebarbtntext">Dashboard</span> </Link>
+                    <Link href="/home" className={url === '/home' ? 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start bg-secondary' : 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start '} ><span className="material-symbols-outlined material-icons" >widgets</span>&nbsp; <span className="sidebarbtntext">Dashboard</span> </Link>
                     <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">group</span>&nbsp;  <span className="sidebarbtntext">Users</span></button>
                     <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">overview</span>&nbsp;  <span className="sidebarbtntext">Attendance</span></button>
                     <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">Payments</span>&nbsp;  <span className="sidebarbtntext">Payroll</span></button>
@@ -77,13 +88,15 @@ export default function DashboardNavbar(props){
                     
                        
                         <div className="ms-lg-auto">
-                        <DropdownButton drop="down-centered" variant="btn btn-outline-dark border-0 " id="dropdown-item-button" title={props.name}>
-
-                            <Dropdown.Item as="button"><i className="fa-solid fa-user"></i> &nbsp; Profile</Dropdown.Item>
+                        
+                        <DropdownButton drop="down-centered" variant="btn btn-outline-dark border-0 rounded-1" id="dropdown-item-button" title={props.name}>
+                            
+                            <Dropdown.Item as="button" onClick={handleShowProfile}><i className="fa-solid fa-crown"></i> &nbsp; Profile</Dropdown.Item>
                             <Dropdown.Item as="button"><i className="fa-solid fa-gear"></i> &nbsp; Settings</Dropdown.Item>
                             <Dropdown.Item as="button" onClick={handleLogout}><i class="fa-solid fa-arrow-right-from-bracket"></i>  &nbsp; Logout</Dropdown.Item>
                             
                         </DropdownButton>
+                        
                         </div>
                     </div>
                 </div>

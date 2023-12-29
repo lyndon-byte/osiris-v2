@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
+use Carbon\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class ProfileController extends Controller
 {
@@ -18,7 +19,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        return Inertia::render('Profile/Edit', [
+        return Inertia::render('AdminProfile', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
@@ -27,17 +28,32 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $request->user()->fill([
+
+            'firstname' => $request->input('firstName'),
+            'lastname'  => $request->input('lastName'),
+            'contactnumber'  =>  $request->input('contactnumber'),
+            'email'  =>  $request->input('email'),
+            'email_verified_at' => Carbon::now()
+        ]);
+
 
         if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+
+
+            $request->user()->sendEmailVerificationNotification();
+
         }
 
-        $request->user()->save();
+        if ($request->user()->markEmailAsVerified()) {
 
-        return Redirect::route('profile.edit');
+            $request->user()->save();
+            event(new Verified($request->user()));
+        }
+
+        return Redirect::route('admin.profile');
     }
 
     /**
