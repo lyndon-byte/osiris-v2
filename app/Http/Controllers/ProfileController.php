@@ -7,8 +7,12 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ChangeEmailVerification;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
+use Laravel\Sanctum\PersonalAccessToken;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 
@@ -22,6 +26,7 @@ class ProfileController extends Controller
         return Inertia::render('AdminProfile', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            
         ]);
     }
 
@@ -29,31 +34,90 @@ class ProfileController extends Controller
      * Update the user's profile information.
      */
     public function update(Request $request): RedirectResponse
-    {
-        $request->user()->fill([
+    {   
+        
+       
+        $currentemail = Auth::user()->email;
+        $firstname = $request->input('firstName');
+        $lastname = $request->input('lastName');
+        $contactnumber = $request->input('contactnumber');
+        $newemailrequest = $request->input('email');
 
-            'firstname' => $request->input('firstName'),
-            'lastname'  => $request->input('lastName'),
-            'contactnumber'  =>  $request->input('contactnumber'),
-            'email'  =>  $request->input('email'),
-            'email_verified_at' => Carbon::now()
-        ]);
+        $token = Session::token();
+        $url = route('verify.newemail',[$token]);
 
+       
+        if($currentemail != $newemailrequest){
 
-        if ($request->user()->isDirty('email')) {
+            $request->validate([
 
+                'firstName' => ['required'],
+                'lastName'  => ['required'],
+                'contactnumber'  => ['required','min:10','max:10'],
+                'email'  => ['required','email','unique:users,email']
+    
+    
+            ]);
+    
 
-            $request->user()->sendEmailVerificationNotification();
+            Mail::to($newemailrequest)->send(new ChangeEmailVerification($firstname,$url));
+            Session::put('newemail',$newemailrequest);
+            Session::put('newfname',$firstname);
+            Session::put('newlname',$lastname);
+            Session::put('newcontactnumber',$contactnumber);
+            
+            
+        }else{
 
-        }
+            $request->validate([
 
-        if ($request->user()->markEmailAsVerified()) {
+                'firstName' => ['required'],
+                'lastName'  => ['required'],
+                'contactnumber'  => ['required','min:10','max:10'],
+                
+    
+            ]);
+    
 
+            $request->user()->fill([
+
+                'firstname' => $request->input('firstName'),
+                'lastname'  => $request->input('lastName'),
+                'contactnumber'  =>  $request->input('contactnumber'),
+                // 'email'  =>  $request->input('email'),
+                
+            ]);
+    
             $request->user()->save();
-            event(new Verified($request->user()));
+
         }
+
+      
 
         return Redirect::route('admin.profile');
+        
+        
+    
+    
+
+        
+    }
+
+    public function changeemail(Request $request)
+    {
+
+        $request->user()->fill([
+
+            'firstname' =>  Session::get('newfname'),
+            'lastname'  => Session::get('newlname'),
+            'contactnumber'  =>  Session::get('newcontactnumber'),
+            'email'  =>  Session::get('newemail')
+            
+        ]);
+
+        $request->user()->save();
+
+
     }
 
     /**

@@ -67,7 +67,19 @@ Route::group(['middleware' => ['admin']], function(){
 
     })->middleware(['auth','verified'])->name('admin.profile');
 
-    Route::post('/editadminprofile',[ProfileController::class,'update'])->middleware(['auth']);
+    Route::post('/editadminprofile',[ProfileController::class,'update'])->middleware(['auth','verified']);
+
+
+    Route::get('/verifynewemail{token}',function(){
+
+        return Inertia::render('NewEmailVerified',[
+
+            'status' => session('status')
+        ]);
+        
+    })->middleware(['auth','verified'])->name('verify.newemail');;
+
+    Route::post('/verifynewemailprocess',[ProfileController::class,'changeemail'])->middleware(['auth','verified']);;
     
 });
 
@@ -78,6 +90,7 @@ Route::post('/sendemailverification',[EmailVerificationNotificationController::c
 Route::get('/register', [UserController::class,'index']);
 
 Route::post('/adduser', [UserController::class,'addadminuser']);
+
 
 
 

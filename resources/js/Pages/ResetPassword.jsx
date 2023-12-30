@@ -41,7 +41,7 @@ export default function ForgotPassword(credential){
 
         setEmail(credential.email);
         setToken(credential.token);
-
+        
     },[])
 
     const handleSubmitNewPassword = async () => {

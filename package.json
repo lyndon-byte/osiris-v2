@@ -25,6 +25,7 @@
     "dependencies": {
         "axis": "^1.0.0",
         "react-bootstrap": "^2.9.1",
-        "react-router-dom": "^6.21.0"
+        "react-router-dom": "^6.21.0",
+        "react-toastify": "^9.1.3"
     }
 }
