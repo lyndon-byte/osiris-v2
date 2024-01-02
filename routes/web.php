@@ -52,7 +52,7 @@ Route::get('/userlogin',[UserController::class,'login'])->name('userlogin');
 
 Route::post('/authenticate',[AuthenticatedSessionController::class,'store']);
 
-Route::get('/accountconfirmation',EmailVerificationPromptController::class);
+Route::get('/accountconfirmation',EmailVerificationPromptController::class)->middleware(['auth']);
 
 Route::post('/signout',[AuthenticatedSessionController::class,'destroy']);
 
@@ -83,6 +83,12 @@ Route::group(['middleware' => ['admin']], function(){
     Route::post('/verifynewemailprocess',[ProfileController::class,'changeemail'])->middleware(['auth','verified']);
 
     Route::post('/changepassword',[PasswordController::class,'update'])->middleware(['auth','verified']);
+
+    Route::get('/users',[UserController::class,'userviews'])->middleware(['auth','verified']);
+
+    Route::post('/addminiuser',[UserController::class,'addemployee'])->middleware(['auth','verified']);
+
+    Route::post('/finduser',[UserController::class,'searchuser'])->middleware(['auth','verified']);
     
 });
 

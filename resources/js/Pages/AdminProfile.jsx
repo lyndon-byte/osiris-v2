@@ -12,7 +12,7 @@ import { TRUE } from "sass";
 
 
 function AdminProfile(status){
-
+    const [companyId,setCompanyId] = useState('')
     const [firstName,setFirstName] = useState('');
     const [lastName,setLastName] = useState('');
     const [email,setEmail] = useState('');
@@ -93,14 +93,14 @@ function AdminProfile(status){
 
     useEffect(() =>{
 
-       
+        setCompanyId(status.auth.user.company_id)
         setFirstName(status.auth.user.firstname)
         setLastName(status.auth.user.lastname)
         setEmail(status.auth.user.email)
         setContactNumber(status.auth.user.contactnumber)
         setCheckNewEmail(status.auth.user.email)
         setRole(status.auth.user.role)
-        
+        console.log(status);
     },[])
 
 
@@ -421,6 +421,9 @@ function AdminProfile(status){
                         <hr />
                         <div className="row mt-4">
                             <div className="col-lg-12">
+                                <h5>Company Id: <span className="text-muted">{companyId}</span></h5>
+                            </div>
+                            <div className="col-lg-12 mt-2">
                                 <h5>Role: <span className="text-muted">{role}</span></h5>
                             </div>
                         </div>

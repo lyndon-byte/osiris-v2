@@ -4,11 +4,18 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Link, usePage } from "@inertiajs/react";
 import axios from "axios";
+import { useEffect } from "react";
 
 
-export default function DashboardNavbar(props){
+export default function DashboardNavbar(){
 
-    const [showSideBar,setShowSideBar] = useState(true)
+    const [showSideBar,setShowSideBar] = useState()
+
+    useEffect(() =>{
+
+        setShowSideBar(true)
+
+    },[])
 
     const {url} = usePage()
 
@@ -45,38 +52,37 @@ export default function DashboardNavbar(props){
     return (
         
         <>
-            <Offcanvas show={showSideBar} data-bs-theme="dark" backdrop={false} onHide={handleSideBarClose} style={{width: 13 + "rem"}}>
-                <Offcanvas.Header closeButton className="mt-3">
-                    <Offcanvas.Title className="navbar-brand fs-4 fw-bold"> 
-                        <span>Osiris</span>
-                    </Offcanvas.Title>
-                </Offcanvas.Header>
-                <Offcanvas.Body >
-
-                    <Link href="/home" className={url === '/home' ? 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start bg-secondary' : 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start '} ><span className="material-symbols-outlined material-icons" >widgets</span>&nbsp; <span className="sidebarbtntext">Dashboard</span> </Link>
-                    <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">group</span>&nbsp;  <span className="sidebarbtntext">Users</span></button>
-                    <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">overview</span>&nbsp;  <span className="sidebarbtntext">Attendance</span></button>
-                    <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">Payments</span>&nbsp;  <span className="sidebarbtntext">Payroll</span></button>
-                    <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">calendar_month</span>&nbsp;  <span className="sidebarbtntext">Job Schedule</span></button>
-                    <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">schedule</span>&nbsp;  <span className="sidebarbtntext">Time Clock</span></button>
-                    <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">hourglass_disabled</span>&nbsp;  <span className="sidebarbtntext">Time Offs </span></button>
-                    
-                </Offcanvas.Body>
-               <footer className="p-3 d-flex justify-content-center">
-                    <div className="container">
-                        <div className="row">
-                            <div className="col d-flex justify-content-center">
-                                <img src="https://i.ibb.co/nm162TF/osirislogo2.png"  alt="" width="30%" />
-                            </div>
-                        </div>
-                        <div className="row">
-                            <div className="col mt-2">
-                            <p className="text-center text-muted">Osiris v 1.2</p>
-                            </div>
-                        </div>
+            <div className={showSideBar ? 'offcanvas offcanvas-start show' : 'offcanvas offcanvas-start'} style={{width: 195 + "px"}} data-bs-theme="dark" data-bs-scroll="true" data-bs-backdrop="false" tabIndex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+                <div className="offcanvas-header mt-2">
+                     <img src="https://i.ibb.co/nm162TF/osirislogo2.png" width="25%" alt=""  />
+                     
+                    <button type="button" className="btn-close text-muted" data-bs-dismiss="offcanvas" onClick={handleSideBarClose} aria-label="Close"></button>
+                </div>
+                <div className="offcanvas-body border-0" >
+                  
+                    <div className="row">
+                        <Link href="/home" className={url === '/home' ? 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start bg-secondary' : 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start '} ><span className="material-symbols-outlined material-icons" >widgets</span>&nbsp; <span className="sidebarbtntext">Dashboard</span> </Link>
+                        <Link href="/users" className={url === '/users' ? "btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start bg-secondary" : "btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start" }><span className="material-symbols-outlined material-icons">group</span>&nbsp;  <span className="sidebarbtntext">Users</span></Link>
+                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">overview</span>&nbsp;  <span className="sidebarbtntext">Attendance</span></button>
+                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">Payments</span>&nbsp;  <span className="sidebarbtntext">Payroll</span></button>
+                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">calendar_month</span>&nbsp;  <span className="sidebarbtntext">Job Schedule</span></button>
+                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">schedule</span>&nbsp;  <span className="sidebarbtntext">Time Clock</span></button>
+                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">hourglass_disabled</span>&nbsp;  <span className="sidebarbtntext">Time Offs </span></button>
+                        
                     </div>
-               </footer>
-            </Offcanvas>
+                </div>
+                <footer className="p-3 d-flex justify-content-center">
+                        <div className="container">
+                            
+                            <div className="row">
+                                <div className="col mt-2">
+                                <p className="text-center text-muted">Osiris v 1.2</p>
+                                </div>
+                            </div>
+                        </div>
+                </footer>
+            </div>
+           
             <nav className="navbar navbar-light py-4 bg-white">
                 
                 <div className="container-fluid">
@@ -89,13 +95,16 @@ export default function DashboardNavbar(props){
                        
                         <div className="ms-lg-auto">
                         
-                        <DropdownButton drop="down-centered" variant="btn btn-outline-dark border-0 rounded-1" id="dropdown-item-button" title={props.name}>
-                            
-                            <Dropdown.Item as="button" onClick={handleShowProfile}><i className="fa-solid fa-crown"></i> &nbsp; Profile</Dropdown.Item>
-                            <Dropdown.Item as="button"><i className="fa-solid fa-gear"></i> &nbsp; Settings</Dropdown.Item>
-                            <Dropdown.Item as="button" onClick={handleLogout}><i class="fa-solid fa-arrow-right-from-bracket"></i>  &nbsp; Logout</Dropdown.Item>
-                            
-                        </DropdownButton>
+                            <Dropdown drop="down-start" >
+                                <Dropdown.Toggle variant="btn btn-outline-dark border-0 rounded-1" style={{fontSize: "16px"}} id="dropdown-basic">
+                                <i className="fa-regular fa-circle-user"></i> Admin
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item as="button" onClick={handleShowProfile}><i className="fa-solid fa-crown"></i> &nbsp; Profile</Dropdown.Item>
+                                    <Dropdown.Item as="button"><i className="fa-solid fa-gear"></i> &nbsp; Settings</Dropdown.Item>
+                                    <Dropdown.Item as="button" onClick={handleLogout}><i class="fa-solid fa-arrow-right-from-bracket"></i>  &nbsp; Logout</Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
                         
                         </div>
                     </div>

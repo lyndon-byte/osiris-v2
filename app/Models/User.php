@@ -13,12 +13,18 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable;
 
     public $timestamps = false;
+    
+    public $incrementing = false;
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
+
+        'id',
+        'company_id',
+        'employee_id',
         'firstname',
         'lastname',
         'contactnumber',
@@ -26,6 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'password',
         'role'
+        
     ];
 
     /**
