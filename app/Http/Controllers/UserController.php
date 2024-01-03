@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\User;
 use Inertia\Inertia;
+use Psy\Readline\Hoa\Event;
 use Illuminate\Http\Request;
 use App\Mail\NewUserCredential;
 use Illuminate\Support\Facades\Auth;
@@ -123,37 +124,78 @@ class UserController extends Controller
 
     }
 
-    public function userviews(){
+    public function userviews(Request $request){
+
+        $searchstring = $request->input('searchString');
 
         $company_id = Auth::user()->company_id;
        
-        $users = User::where('company_id',$company_id )
-                      ->where('role','employee')
-                      
-                      ->orderBy('employee_id','desc')
-                      ->get();
-
         return Inertia::render('User',[
 
-          'users' => $users
+          'users' => User::where('company_id',$company_id )
+                ->where('role','employee')
+                ->orderBy('employee_id','desc')
+                ->get(),
+
+
+          'specifyuser' => Inertia::lazy(fn () => User::where([
+            
+                            ['company_id',$company_id],
+                            ['role','employee'], 
+                            ['firstname','LIKE','%'.$searchstring.'%']
+            
+                       ])
+                       ->orWhere([
+            
+                            ['company_id',$company_id],
+                            ['role','employee'], 
+                            ['employee_id','LIKE','%'.$searchstring.'%']
+            
+                       ])
+                       ->orWhere([
+            
+                            ['company_id',$company_id],
+                            ['role','employee'], 
+                            ['lastname','LIKE','%'.$searchstring.'%']
+        
+                       ])
+                       ->orWhere([
+            
+                            ['company_id',$company_id],
+                            ['role','employee'], 
+                            ['email','LIKE','%'.$searchstring.'%']
+        
+                       ])
+                      ->orderBy('employee_id','desc')
+                      ->get()),
 
         ]);
 
+        
+        
     }
 
     public function searchuser(Request $request){
 
-      $company_id = Auth::user()->company_id;
-     
+      
+
+      // $users = User::where('company_id',$company_id )
+      //               ->where('role','employee')
+      //               // ->Where('employee_id','kk')
+      //               // ->orWhere('firstname','kk')
+      //               // ->orWhere('lastname','kk')
+      //               // ->orderBy('employee_id','desc')
+      //               ->where('firstname','LIKE','%'.$searchstring.'%')
+      //               ->get();
+
       $searchstring = $request->input('searchString');
 
+      $company_id = Auth::user()->company_id;
+     
       $users = User::where('company_id',$company_id )
                     ->where('role','employee')
-                    // ->Where('employee_id','kk')
-                    // ->orWhere('firstname','kk')
-                    // ->orWhere('lastname','kk')
-                    // ->orderBy('employee_id','desc')
-                    ->where('firstname','Like','%'.$searchstring.'%')
+                    ->where('firstname','LIKE','%'.$searchstring.'%')
+                    ->orderBy('employee_id','desc')
                     ->get();
 
       return Inertia::render('User',[
@@ -161,6 +203,7 @@ class UserController extends Controller
         'users' => $users
 
       ]);
+     
 
   }
 }

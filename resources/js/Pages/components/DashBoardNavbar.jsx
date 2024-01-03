@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage,router } from "@inertiajs/react";
 import axios from "axios";
 import { useEffect } from "react";
 

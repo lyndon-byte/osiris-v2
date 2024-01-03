@@ -8,11 +8,17 @@ import Spinner from 'react-bootstrap/Spinner';
 import DashboardNavbar from "./components/DashBoardNavbar";
 import axios from "axios";
 import { useEffect } from "react";
+import {router, usePage} from '@inertiajs/react'
 
 
 export default function User(users){
 
+    const {specifyuser} = usePage().props
+
+    const [activeUserCounter,setActiveUserCounter] = useState(0)
     const [searchString,setSearchString] = useState('');
+    const [refreshSearch,setRefreshSearch] = useState(false)
+
     const [showModalForAddUser,setShowModalForAddUser] = useState(false);
     const [firstName,setFirstName] = useState('');
     const [lastName,setLastName] = useState('');
@@ -33,42 +39,45 @@ export default function User(users){
     },[idForSelection])
 
 
-    useEffect(() => {
-
-        // Inertia.get(route(route().current()), query, {
-        //     preserveState: true,
-        //     replace: true,
-        // });
-
-    },[])
-
     useEffect(() =>{
 
         setUsersInfo(users.users)
-
-
+        setActiveUserCounter(users.users.length)
     },[])
-    
-    const handleFindUser = async (e) => {
 
-        e.preventDefault();
+    useEffect(() => {
+        
 
-        try {
+        if(specifyuser){
 
-            await axios.post('/finduser',{searchString})
-                .then(() =>{
-
-                    setUsersInfo(users.users)
-
-                })
-
-
-        }catch(error){
-
-            setInputError(error.data.response.errors)
-
+            setUsersInfo(specifyuser)
+           
         }
+
+    },[specifyuser])
+
+
+
+    useEffect(() =>{
+
+        if(searchString != ""){
+
+            router.visit('/users', {
+                data: {searchString},
+                preserveState: true,
+                only: ['specifyuser']
+              })
+        }
+
+    },[searchString])
+
+
+    const handleResetSearch = () => {
+
+        setRefreshSearch(true);
+        window.location.reload();
     }
+ 
 
     const handleClose = () => setShowModalForAddUser(false);
 
@@ -195,19 +204,27 @@ export default function User(users){
                     <div className="col-lg-12 col-sm-12 p-4  bg-white rounded-2">
                        
                         <button className="btn btn-primary rounded-5 float-end mt-2" onClick={showAddUser}><i className="fa-regular fa-plus"></i> Add User</button>
-                        <h5 className="mt-3 text-muted">Active Users: &nbsp;<span className="text-success fw-bold">{usersInfo.length}</span></h5>
+                        <h5 className="mt-3 text-muted">Active User: &nbsp;<span className="text-success fw-bold">{activeUserCounter}</span></h5>
                 
                     </div>
                 </div>
+                
                 <div className="row bg-white rounded-2 mt-5">
                     <div className="col-lg-3 mt-2 p-4">
 
-                        <form class="d-flex">
-                            <input className="form-control me-2" onChange={(e) => {setSearchString(e.target.value)}} type="search" placeholder="Search" aria-label="Search"/>
-                            <button className="btn btn-dark rounded-1" type="submit" onClick={handleFindUser}>Search</button>
-                        </form> 
-                         
+                        <div className="d-flex">
+                            
+                            <div className="input-group">
+                                
+                                <span  className="input-group-text bg-white border-end-0 rounded-0"><i className="fa-solid fa-magnifying-glass"></i></span>
+                                <input className="form-control me-2 border-start-0" onChange={(e) => {setSearchString(e.target.value)}} type="search" placeholder="Search" aria-label="Search"/>
+                                <button className="btn btn-outline-primary border-0 rounded-5" onClick={handleResetSearch}><i class={refreshSearch ? "fa-solid fa-spinner " : "fa-solid fa-rotate-right"}></i></button>
+                            </div>
+                           
+                        </div> 
+                        <p className="mt-3">{specifyuser ? 'Search Result: ' + usersInfo.length : ""}</p>
                     </div>
+                    
                     <div className="col-lg-9 mt-2 p-4">
                        
                             <Dropdown drop="down-start" className="float-end">
