@@ -88,7 +88,7 @@ Route::group(['middleware' => ['admin']], function(){
 
     Route::post('/addminiuser',[UserController::class,'addemployee'])->middleware(['auth','verified']);
 
-    Route::post('/finduser',[UserController::class,'searchuser'])->middleware(['auth','verified']);
+    Route::get('/finduser',[UserController::class,'searchuser'])->middleware(['auth','verified']);
     
 });
 

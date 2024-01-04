@@ -129,13 +129,15 @@ class UserController extends Controller
         $searchstring = $request->input('searchString');
 
         $company_id = Auth::user()->company_id;
-       
+
+        
+        
         return Inertia::render('User',[
 
-          'users' => User::where('company_id',$company_id )
-                ->where('role','employee')
-                ->orderBy('employee_id','desc')
-                ->get(),
+          'users' =>  User::where('company_id',$company_id )
+                                ->where('role','employee')
+                                ->orderBy('employee_id','desc')
+                                ->paginate(5),
 
 
           'specifyuser' => Inertia::lazy(fn () => User::where([
@@ -167,7 +169,7 @@ class UserController extends Controller
         
                        ])
                       ->orderBy('employee_id','desc')
-                      ->get()),
+                      ->paginate(5)),
 
         ]);
 
@@ -192,11 +194,36 @@ class UserController extends Controller
 
       $company_id = Auth::user()->company_id;
      
-      $users = User::where('company_id',$company_id )
-                    ->where('role','employee')
-                    ->where('firstname','LIKE','%'.$searchstring.'%')
-                    ->orderBy('employee_id','desc')
-                    ->get();
+      $users = User::where([
+            
+                    ['company_id',$company_id],
+                    ['role','employee'], 
+                    ['firstname','LIKE','%'.$searchstring.'%']
+
+              ])
+              ->orWhere([
+
+                    ['company_id',$company_id],
+                    ['role','employee'], 
+                    ['employee_id','LIKE','%'.$searchstring.'%']
+
+              ])
+              ->orWhere([
+
+                    ['company_id',$company_id],
+                    ['role','employee'], 
+                    ['lastname','LIKE','%'.$searchstring.'%']
+
+              ])
+              ->orWhere([
+
+                    ['company_id',$company_id],
+                    ['role','employee'], 
+                    ['email','LIKE','%'.$searchstring.'%']
+
+              ])
+              ->orderBy('employee_id','desc')
+              ->paginate(5);
 
       return Inertia::render('User',[
 

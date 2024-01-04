@@ -13,11 +13,13 @@ import {router, usePage} from '@inertiajs/react'
 
 export default function User(users){
 
-    const {specifyuser} = usePage().props
+    const paginatedUsers = usePage().props.users.data
+    const totalUsers = usePage().props.users.total
+    const paginationLinks = usePage().props.users.links
 
-    const [activeUserCounter,setActiveUserCounter] = useState(0)
+
     const [searchString,setSearchString] = useState('');
-    const [refreshSearch,setRefreshSearch] = useState(false)
+    const [searchNotFound,setSearchNotFound] = useState(false)
 
     const [showModalForAddUser,setShowModalForAddUser] = useState(false);
     const [firstName,setFirstName] = useState('');
@@ -27,7 +29,6 @@ export default function User(users){
     const [inputError,setInputError] = useState('')
     const [showModalAddUserSuccess,setShowModalAddUserSuccess] = useState(false)
     const [showLoading,setShowLoading] = useState('hidden')
-    const [usersInfo,setUsersInfo] = useState([])
     const [idForSelection,setIdForSelection] = useState(0)
 
     
@@ -38,46 +39,40 @@ export default function User(users){
 
     },[idForSelection])
 
-
-    useEffect(() =>{
-
-        setUsersInfo(users.users)
-        setActiveUserCounter(users.users.length)
-    },[])
-
+    
     useEffect(() => {
-        
 
-        if(specifyuser){
+            if(paginatedUsers.length == 0){
 
-            setUsersInfo(specifyuser)
-           
-        }
+               
+                setSearchNotFound(true)
+                
+            }else{
 
-    },[specifyuser])
+                setSearchNotFound(false)
+            }
 
 
+    },[paginatedUsers])
 
     useEffect(() =>{
 
-        if(searchString != ""){
+       if (searchString == ""){
 
-            router.visit('/users', {
-                data: {searchString},
-                preserveState: true,
-                only: ['specifyuser']
-              })
-        }
+        setSearchNotFound(false)
+
+       }
 
     },[searchString])
 
+    const handleSearchSpecificUSer = () => {
 
-    const handleResetSearch = () => {
+        router.visit('/finduser', {
+            data: {searchString},
+            preserveState: true   
+        })
 
-        setRefreshSearch(true);
-        window.location.reload();
     }
- 
 
     const handleClose = () => setShowModalForAddUser(false);
 
@@ -199,34 +194,36 @@ export default function User(users){
           
            
            <DashboardNavbar></DashboardNavbar>
-            <div className="container">
+            <div className="container mb-5">
                 <div className="row mt-5">
                     <div className="col-lg-12 col-sm-12 p-4  bg-white rounded-2">
                        
                         <button className="btn btn-primary rounded-5 float-end mt-2" onClick={showAddUser}><i className="fa-regular fa-plus"></i> Add User</button>
-                        <h5 className="mt-3 text-muted">Active User: &nbsp;<span className="text-success fw-bold">{activeUserCounter}</span></h5>
+                        <h5 className="mt-3 text-muted">Number of Users: <span className="text-primary fw-bold"> {totalUsers}</span></h5>
                 
                     </div>
                 </div>
                 
                 <div className="row bg-white rounded-2 mt-5">
-                    <div className="col-lg-3 mt-2 p-4">
+                    <div className="col-lg-4 mt-2 p-4">
 
-                        <div className="d-flex">
+                        
                             
                             <div className="input-group">
                                 
-                                <span  className="input-group-text bg-white border-end-0 rounded-0"><i className="fa-solid fa-magnifying-glass"></i></span>
-                                <input className="form-control me-2 border-start-0" onChange={(e) => {setSearchString(e.target.value)}} type="search" placeholder="Search" aria-label="Search"/>
-                                <button className="btn btn-outline-primary border-0 rounded-5" onClick={handleResetSearch}><i class={refreshSearch ? "fa-solid fa-spinner " : "fa-solid fa-rotate-right"}></i></button>
+                               
+                                <input className={searchNotFound ? "form-control me-2 rounded-1 border-danger" : "form-control me-2 rounded-1"} value={searchString} onChange={(e) => {setSearchString(e.target.value)}} type="search" placeholder="Search" aria-label="Search"/>
+                                                   
+                                <button className="btn btn-primary rounded-1" onClick={handleSearchSpecificUSer}><i className="fa-solid fa-magnifying-glass"></i> Submit</button>
+                                
                             </div>
-                           
-                        </div> 
-                        <p className="mt-3">{specifyuser ? 'Search Result: ' + usersInfo.length : ""}</p>
+                            
+                            <div className="form-text text-danger mt-2" id="basic-addon4">{searchNotFound ? 'User not found' : ''}</div>
+                            
+                        
                     </div>
                     
-                    <div className="col-lg-9 mt-2 p-4">
-                       
+                    <div className="col-lg-8 mt-2 p-4">
                             <Dropdown drop="down-start" className="float-end">
                                 <Dropdown.Toggle variant="btn btn-outline-primary rounded-1" style={{fontSize: "16px"}} id="dropdown-basic">
                                 <i className="fa-solid fa-filter"></i> Departments
@@ -235,29 +232,39 @@ export default function User(users){
                                     <Dropdown.Item as="button">Accounting</Dropdown.Item>
                                     <Dropdown.Item as="button">Production</Dropdown.Item>
                                     <Dropdown.Item as="button">Marketing</Dropdown.Item>
-                                    <Dropdown.Item as="button"><button className="btn btn-primary rounded-1" style={{fontSize: "14px"}}><i className="fa-solid fa-gear"></i> Configure</button></Dropdown.Item>
+                                    <Dropdown.Item as="button"><button className="btn btn-primary rounded-1 w-100" style={{fontSize: "14px"}}><i className="fa-solid fa-gear"></i> Configure</button></Dropdown.Item>
 
                                 </Dropdown.Menu>
                             </Dropdown>
                     </div>
+                    
                     <div className="col-lg-12 col-sm-12">
-                       
-                        <Table responsive hover variant="bg-white mt-1" style={{fontSize: "14px"}}>
+                   
+                        <Table responsive hover variant="bg-white" style={{fontSize: "14px"}}>
+                            
                                 <thead>
                                     <tr>
-                                    <th className="p-4">Employee ID</th>
-                                    <th className="p-4"> First Name</th>
-                                    <th className="p-4">Last Name</th>
-                                    <th className="p-4">Email</th>
-                                    <th className="p-4">Contact number</th>
-                                    <th className="p-4 text-center">Action</th>
+                                        <th className="p-4">Employee ID</th>
+                                        <th className="p-4"> First Name</th>
+                                        <th className="p-4">Last Name</th>
+                                        <th className="p-4">Email</th>
+                                        <th className="p-4">Contact number</th>
+                                        <th className="p-4 text-center">Action</th>
+                                      
                                     </tr>
+                                    
                                 </thead>
+                              
                                 <tbody >
-                                   
-                                        {
 
-                                            usersInfo.map((data) => (
+                                    
+
+                                        {
+                                            
+                                           
+                                           
+
+                                            paginatedUsers.map((data) => (
 
                                                <tr>
                                                      <td className="p-4">{data.employee_id}</td>
@@ -280,12 +287,30 @@ export default function User(users){
                                     
                                
                         </Table>
-                        <h2  className="text-center mt-5 text-muted"> <i className="fa-solid fa-people-group"></i></h2>
+                       
+                       
+                    </div>
+                    <div className="col-lg-12 d-flex mt-2">
+                        <nav className="m-auto">
+                            <ul className="pagination">
+                                {
+
+                                    paginationLinks.map((data) => ( 
+
+                                        <li className="page-item"><a className="page-link" href={data.url}>{data.label === "&laquo; Previous" ? '<< Prev' : data.label === "Next &raquo;" ? "Next >>" : data.label}</a></li>
+
+                                    ))
+                                }
+                               
+                               
+                            </ul>
+                        </nav>
+                    </div>
+                    <h2  className="text-center mt-3 text-muted"> <i className="fa-solid fa-people-group"></i></h2>
                         <h5 className="text-center mt-2 mb-3 text-muted">Get your team on board!</h5>
                         <div className="col-lg-12 d-flex ">
                             <button className="btn btn-primary rounded-5 m-auto mb-5" onClick={showAddUser}><i className="fa-regular fa-plus"></i> Add User</button>
                         </div>
-                    </div>
                 </div>
             </div>
 

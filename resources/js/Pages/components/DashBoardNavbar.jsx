@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { Link, usePage,router } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import axios from "axios";
 import { useEffect } from "react";
 
@@ -17,7 +17,7 @@ export default function DashboardNavbar(){
 
     },[])
 
-    const {url} = usePage()
+    const {url,component} = usePage()
 
     const handleSideBarClose = () => {
 
@@ -58,16 +58,16 @@ export default function DashboardNavbar(){
                      
                     <button type="button" className="btn-close text-muted" data-bs-dismiss="offcanvas" onClick={handleSideBarClose} aria-label="Close"></button>
                 </div>
-                <div className="offcanvas-body border-0" >
+                <div className="offcanvas-body border-0 p-4" >
                   
                     <div className="row">
-                        <Link href="/home" className={url === '/home' ? 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start bg-secondary' : 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start '} ><span className="material-symbols-outlined material-icons" >widgets</span>&nbsp; <span className="sidebarbtntext">Dashboard</span> </Link>
-                        <Link href="/users" className={url === '/users' ? "btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start bg-secondary" : "btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start" }><span className="material-symbols-outlined material-icons">group</span>&nbsp;  <span className="sidebarbtntext">Users</span></Link>
-                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">overview</span>&nbsp;  <span className="sidebarbtntext">Attendance</span></button>
-                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">Payments</span>&nbsp;  <span className="sidebarbtntext">Payroll</span></button>
-                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">calendar_month</span>&nbsp;  <span className="sidebarbtntext">Job Schedule</span></button>
-                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">schedule</span>&nbsp;  <span className="sidebarbtntext">Time Clock</span></button>
-                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start"><span className="material-symbols-outlined material-icons">hourglass_disabled</span>&nbsp;  <span className="sidebarbtntext">Time Offs </span></button>
+                        <Link href="/home" className={component === 'Dashboard' ? 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start bg-secondary' : 'btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start '} style={{fontSize: "15px"}} ><span className="material-symbols-outlined material-icons" >widgets</span>&nbsp; <span className="sidebarbtntext">Dashboard</span> </Link>
+                        <Link href="/users" className={component === 'User' ? "btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start bg-secondary" : "btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start" } style={{fontSize: "15px"}}><span className="material-symbols-outlined material-icons">group</span>&nbsp;  <span className="sidebarbtntext">Users</span></Link>
+                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start" style={{fontSize: "15px"}}><span className="material-symbols-outlined material-icons">overview</span>&nbsp;  <span className="sidebarbtntext">Attendance</span></button>
+                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start" style={{fontSize: "15px"}}><span className="material-symbols-outlined material-icons">Payments</span>&nbsp;  <span className="sidebarbtntext">Payroll</span></button>
+                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start" style={{fontSize: "15px"}}><span className="material-symbols-outlined material-icons">calendar_month</span>&nbsp;  <span className="sidebarbtntext">Job Schedule</span></button>
+                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start" style={{fontSize: "15px"}}><span className="material-symbols-outlined material-icons">schedule</span>&nbsp;  <span className="sidebarbtntext">Time Clock</span></button>
+                        <button className="btn btn-outline-secondary text-white border-0 rounded-1 w-100 text-start" style={{fontSize: "15px"}}><span className="material-symbols-outlined material-icons">hourglass_disabled</span>&nbsp;  <span className="sidebarbtntext">Time Offs </span></button>
                         
                     </div>
                 </div>
