@@ -90,6 +90,8 @@ Route::group(['middleware' => ['admin']], function(){
 
     Route::get('/finduser',[UserController::class,'searchuser'])->middleware(['auth','verified']);
     
+    Route::get('/singleuser',[UserController::class,'getsingleuserinfo'])->middleware(['auth','verified']);
+
 });
 
 Auth::routes(['verify' => true]);

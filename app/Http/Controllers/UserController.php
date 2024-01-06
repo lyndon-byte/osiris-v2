@@ -180,16 +180,6 @@ class UserController extends Controller
     public function searchuser(Request $request){
 
       
-
-      // $users = User::where('company_id',$company_id )
-      //               ->where('role','employee')
-      //               // ->Where('employee_id','kk')
-      //               // ->orWhere('firstname','kk')
-      //               // ->orWhere('lastname','kk')
-      //               // ->orderBy('employee_id','desc')
-      //               ->where('firstname','LIKE','%'.$searchstring.'%')
-      //               ->get();
-
       $searchstring = $request->input('searchString');
 
       $company_id = Auth::user()->company_id;
@@ -231,6 +221,18 @@ class UserController extends Controller
 
       ]);
      
+
+  }
+
+  public function getsingleuserinfo(Request $request){
+
+    $userid =  $request->input('idForSelection');
+
+    return Inertia::render('UserInfo',[
+
+      'userid' => $userid
+
+    ]);
 
   }
 }

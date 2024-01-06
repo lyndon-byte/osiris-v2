@@ -29,13 +29,17 @@ export default function User(users){
     const [inputError,setInputError] = useState('')
     const [showModalAddUserSuccess,setShowModalAddUserSuccess] = useState(false)
     const [showLoading,setShowLoading] = useState('hidden')
-    const [idForSelection,setIdForSelection] = useState(0)
+    const [idForSelection,setIdForSelection] = useState('')
+
 
     
     
     useEffect(() =>{
 
-        console.log(idForSelection)
+        if(idForSelection != ''){
+
+            router.get('/singleuser',{idForSelection})
+        }
 
     },[idForSelection])
 
@@ -290,7 +294,7 @@ export default function User(users){
                        
                        
                     </div>
-                    <div className="col-lg-12 d-flex mt-2">
+                    <div className="col-lg-12 d-flex mt-3">
                         <nav className="m-auto">
                             <ul className="pagination">
                                 {
