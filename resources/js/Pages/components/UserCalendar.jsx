@@ -5,19 +5,23 @@ import globalize from 'globalize'
 import { useState, useCallback ,useRef,useEffect } from 'react';
 
 const localizer = globalizeLocalizer(globalize)
-const eventsList = [
 
-    {
-        title: 'Workday',
-        start: new Date(2024,0,7),
-        end: new Date(2024,0,7),
-        allDay: true,
-        
-    }
-    
-];
 
 function UserCalendar(){
+
+    const [date,sateDate] = useState('2024,1,8')
+
+    const eventsList = [
+
+        {
+            title: 'Workday',
+            start: new Date(date),
+            end: new Date(date),
+            allDay: true,
+            
+        }
+        
+    ];
 
     const clickRef = useRef(null)
 

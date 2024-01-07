@@ -16,7 +16,7 @@ export default function User(users){
     const paginatedUsers = usePage().props.users.data
     const totalUsers = usePage().props.users.total
     const paginationLinks = usePage().props.users.links
-
+    
 
     const [searchString,setSearchString] = useState('');
     const [searchNotFound,setSearchNotFound] = useState(false)
@@ -38,7 +38,14 @@ export default function User(users){
 
         if(idForSelection != ''){
 
-            router.get('/singleuser',{idForSelection})
+            router.visit('/singleuser', {
+                method: 'get',
+                data: {
+
+                  id: idForSelection,
+                  
+                },
+            })
         }
 
     },[idForSelection])
@@ -74,7 +81,8 @@ export default function User(users){
         router.visit('/finduser', {
             data: {searchString},
             preserveState: true   
-        })
+            
+    })
 
     }
 

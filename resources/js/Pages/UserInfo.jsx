@@ -1,29 +1,154 @@
 import React from "react";
-import { usePage , useForm  } from "@inertiajs/react";
-import { useEffect, useState } from "react";
+import { usePage , useForm , router } from "@inertiajs/react";
+import axios from "axios";
+import { useEffect, useState} from "react";
 import DashboardNavbar from "./components/DashBoardNavbar";
 import UserCalendar from './components/UserCalendar';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 export default function UserInfo(){
 
-    const selectedUserId = usePage().props.userid
+    const userbasicinfo = usePage().props.userbasicinfo
+    const companydetails = usePage().props.companydetails
+    const [defaultEmail,setDefaultEmail] = useState(userbasicinfo[0].email)
+    const [companyid,setCompanyId] = useState(userbasicinfo[0].company_id)
+    const [employeeid,setEmployeeId] = useState(userbasicinfo[0].employee_id)
+    const [firstName,setFirstName] = useState(userbasicinfo[0].firstname)
+    const [lastName,setLastName] = useState(userbasicinfo[0].lastname)
+    const [email,setEmail] = useState(userbasicinfo[0].email)
+    const [contactNumber,setContactNumber] = useState(userbasicinfo[0].contactnumber)
+    const [birthdate,setBirthDate] = useState('')
+    const [role,setRole] = useState('employee')
+    const [gender,setGender] = useState('')
+    const [addressline,setAddressline] = useState('')
+    const [city,setCity] = useState('')
+    const [state,setState] = useState('')
+    const [postal,setPostal] = useState('')
+    const [country,setCountry] = useState('philippines')
+    const [jobtitle,setJobTitle] = useState('')
+    const [startDate,setStartDate] = useState('')
+    const [department,setDepartment] = useState('')
+    const [team,setTeam] = useState('')
+    const [active,setActive] = useState(false)
+    const [seconds,setSeconds] = useState(0)
+    const [inputErrors,setInputErrors] = useState('')
 
-    const [auth,setAuth] = useState(true)
 
-     useEffect(() => {
 
-        console.log(selectedUserId)
-        if(selectedUserId == null){
+    useEffect(() => {
 
-            setAuth(false)
+        console.log(inputErrors)
+
+    },[inputErrors])
+
+
+    useEffect(() =>{
+        console.log(seconds)
+        if(seconds == 2){
+
+            window.location.reload()
+
         }
-    
+    },[seconds])
+
+    useEffect(() => {
+
+       try{
+            setBirthDate(companydetails[0].birthdate)
+            setGender(companydetails[0].gender)
+            setAddressline(companydetails[0].addressline)
+            setCity(companydetails[0].city)
+            setState(companydetails[0].state)
+            setPostal(companydetails[0].postal)
+            setJobTitle(companydetails[0].jobtitle)
+            setStartDate(companydetails[0].startdate)
+            setDepartment(companydetails[0].department)
+            setTeam(companydetails[0].team)
+
+       }catch(error){
+
+            console.log(error)
+       }
+        
     },[])
+   
+   
+    const showToastMessage = () => {
+
+        toast.info("Saving changes", {
+            position: toast.POSITION.TOP_RIGHT,
+        })
+
+    };
+
+    const handleAddUserCompanyDetails = async () => {
+
+        setInputErrors('')
+       
+        
+              try{
+                 
+                 await axios.post('/addusercompanydetails',
+
+                        {
+                                        companyid,
+                                        employeeid,
+                                        firstName,
+                                        lastName,
+                                        defaultEmail,
+                                        email,
+                                        contactNumber,
+                                        role,
+                                        birthdate,
+                                        gender,
+                                        addressline,
+                                        city,
+                                        state,
+                                        country,
+                                        postal,
+                                        jobtitle,
+                                        startDate,
+                                        department,
+                                        team,
+
+                        }
+                    ).then(() =>{
+
+                        showToastMessage();
+                       
+                        setInterval(() => {
+                               
+                            setSeconds(seconds => seconds + 1);
+                            
+                        }, 1000);
+
+                    })
+                    
+                   
+
+              }catch(error){
+                    
+                
+                  toast.error("Oops! it looks like you entered wrong information", {
+                    position: toast.POSITION.TOP_CENTER,
+                  });
+
+                    setInputErrors(error.response.data.errors)
+
+              }
+
+    }
+
+   
 
     return (
         
         
-        <>
+        <>  
+
+            <ToastContainer></ToastContainer>
             <DashboardNavbar></DashboardNavbar>
             <div className="container mt-5" style={{marginBottom: "150px"}}>
                 <nav aria-label="breadcrumb">
@@ -36,7 +161,7 @@ export default function UserInfo(){
                 <div className="col-lg-12 col-sm-12 p-4 bg-white rounded-2">
                        
                         <button className="btn btn-danger float-end rounded-1"><i className="fa-regular fa-envelope"></i> Send Email</button>
-                        <h5 className="mt-2 text-muted">{selectedUserId}</h5>
+                        <h5 className="mt-2 text-muted">{userbasicinfo[0].employee_id}</h5>
                         
 
                 </div>
@@ -47,87 +172,83 @@ export default function UserInfo(){
                         <div className="mb-3 mt-3">
                             <label className="form-label">First Name</label>
                             <div className="input-group">
-                                <input type="text" className="form-control rounded-1" aria-describedby="basic-addon3 basic-addon4"/>
+                                <input type="text" value={firstName} onChange={(e) => {setFirstName(e.target.value)}} className={inputErrors['firstName'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} aria-describedby="basic-addon3 basic-addon4"/>
                             </div>
-                                <div className="form-text" id="basic-addon4"></div>
+                                <div className="form-text text-danger" id="basic-addon4">{inputErrors['firstName']}</div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Last Name</label>
                             <div className="input-group">
-                                <input type="text" className="form-control rounded-1" aria-describedby="basic-addon3 basic-addon4"/>
+                                <input type="text" value={lastName} onChange={(e) => {setLastName(e.target.value)}} className={inputErrors['lastName'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} aria-describedby="basic-addon3 basic-addon4"/>
                             </div>
-                                <div className="form-text" id="basic-addon4"></div>
+                                <div className="form-text text-danger" id="basic-addon4">{inputErrors['lastName']}</div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Contact Number</label>
                             <div className="input-group">
-                                <input type="text" className="form-control rounded-1" aria-describedby="basic-addon3 basic-addon4"/>
+                                <span class="input-group-text" id="basic-addon1">+63</span>
+
+                                <input type="text" value={contactNumber} onChange={(e) => {setContactNumber(e.target.value)}} className={inputErrors['contactNumber'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} aria-describedby="basic-addon3 basic-addon4"/>
                             </div>
-                                <div className="form-text" id="basic-addon4"></div>
+                                <div className="form-text text-danger" id="basic-addon4">{inputErrors['contactNumber']}</div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Email</label>
                             <div className="input-group">
-                                <input type="text" className="form-control rounded-1" aria-describedby="basic-addon3 basic-addon4"/>
+                                <input type="text" value={email} onChange={(e) => {setEmail(e.target.value)}} className={inputErrors['email'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} aria-describedby="basic-addon3 basic-addon4"/>
                             </div>
-                                <div className="form-text" id="basic-addon4"></div>
+                                <div className="form-text text-danger" id="basic-addon4">{inputErrors['email']}</div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Birth Date</label>
                             <div className="input-group">
-                                <input type="date" className="form-control rounded-1" aria-describedby="basic-addon3 basic-addon4"/>
+                                <input type="date" value={birthdate} onChange={(e) => {setBirthDate(e.target.value)}} className={inputErrors['birthdate'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} aria-describedby="basic-addon3 basic-addon4"/>
                             </div>
-                                <div className="form-text" id="basic-addon4"></div>
+                                <div className="form-text text-danger" id="basic-addon4">{inputErrors['birthdate']}</div>
                         </div>
                         <div className="mb-3">
                             
                             <div className="input-group mt-4">
-                                <select className="form-select rounded-1" aria-label="Default select example">
-                                    <option selected>Gender</option>
-                                    <option value="1">Male</option>
-                                    <option value="2">Female</option>
-                                    <option value="3">Rather not say</option>
+                                <select onChange={(e) => {setGender(e.target.value)}} className="form-select rounded-1" aria-label="Default select example">
+                                    <option value={gender} selected>{gender}</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Rather not say">Rather not say</option>
                                 </select>
                             </div>
-                                <div className="form-text" id="basic-addon4"></div>
+                                <div className="form-text text-danger" id="basic-addon4">{inputErrors['gender']}</div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label mb-3 mt-3">Home Address</label>
                            
                                 <div class="form-floating">
-                                    <input type="text" className="form-control rounded-1" id="floatingPassword" placeholder="Password"/>
+                                    <input type="text" value={addressline} onChange={(e) => {setAddressline(e.target.value)}} className={inputErrors['addressline'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} id="floatingPassword" placeholder="Password"/>
                                     <label className="text-muted">Address Line 1</label>
                                 </div>
                             
-                            <div className="form-text" id="basic-addon4"></div>
+                            <div className="form-text text-danger" id="basic-addon4">{inputErrors['addressline']}</div>
                         </div>
+            
                         <div className="mb-3">
                                 <div class="form-floating">
-                                    <input type="text" className="form-control rounded-1" id="floatingPassword" placeholder="Password"/>
-                                    <label className="text-muted">Address Line 2</label>
-                                </div>
-                            
-                            <div className="form-text" id="basic-addon4"></div>
-                        </div>
-                        <div className="mb-3">
-                                <div class="form-floating">
-                                    <input type="text" className="form-control rounded-1" id="floatingPassword" placeholder="Password"/>
+                                    <input type="text" value={city} onChange={(e) => {setCity(e.target.value)}} className={inputErrors['city'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} id="floatingPassword" placeholder="Password"/>
                                     <label className="text-muted">City</label>
                                 </div>
                             
-                            <div className="form-text" id="basic-addon4"></div>
+                            <div className="form-text text-danger" id="basic-addon4">{inputErrors['city']}</div>
                         </div>
                         <div className="mb-3">
                                 <div class="form-floating">
-                                    <input type="text" className="form-control rounded-1" id="floatingPassword" placeholder="Password"/>
+                                    <input type="text" value={state} onChange={(e) => {setState(e.target.value)}} className={inputErrors['state'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} id="floatingPassword" placeholder="Password"/>
                                     <label className="text-muted">State/Province</label>
                                 </div>
                             
-                            <div className="form-text" id="basic-addon4"></div>
+                            <div className="form-text text-danger" id="basic-addon4">{inputErrors['state']}</div>
                         </div>
+                       
                         <div className="mb-3">
                             
-                           
+                          
                                 <div class="form-floating">
                                     <input type="text" value="Philippines" disabled className="form-control rounded-1" id="floatingPassword" placeholder="Password"/>
                                     <label className="text-muted">Country</label>
@@ -135,58 +256,67 @@ export default function UserInfo(){
                             
                             <div className="form-text" id="basic-addon4"></div>
                         </div>
+                        <div className="mb-3">
+                                <div class="form-floating">
+                                    <input type="text" value={postal} onChange={(e) => {setPostal(e.target.value)}} className={inputErrors['postal'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} id="floatingPassword" placeholder="Password"/>
+                                    <label className="text-muted">Postal Code</label>
+                                </div>
+                            
+                            <div className="form-text text-danger" id="basic-addon4">{inputErrors['postal']}</div>
+                        </div>
                         <h5 className="mb-5 mt-5 text-muted">Job Details</h5>
                         <div className="mb-3">
                                 <div class="form-floating">
-                                    <input type="text" value="cc id" disabled className="form-control rounded-1" id="floatingPassword" placeholder="Password"/>
+                                    <input type="text" value={companyid} disabled className="form-control rounded-1" id="floatingPassword" placeholder="Password"/>
                                     <label className="text-muted">Company ID</label>
                                 </div>
-                            <div className="form-text" id="basic-addon4"></div>
+                            <div className="form-text text-danger" id="basic-addon4"></div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Job Title</label>
                             <div className="input-group">
-                                <select className="form-select rounded-1" aria-label="Default select example">
-                                    <option selected>Select Option</option>
-                                    <option value="1">Office Staff</option>
-                                    <option value="2">Machine operator</option>
-                                    <option value="3">Safety Officer</option>
+                                <select onChange={(e) => {setJobTitle(e.target.value)}} className={inputErrors['jobtitle'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} aria-label="Default select example">
+                                    <option value={jobtitle} selected>{jobtitle}</option>
+                                    <option value="Office Staff">Office Staff</option>
+                                    <option value="Machine operator">Machine operator</option>
+                                    <option value="Safety Officer">Safety Officer</option>
                                 </select>
                             </div>
-                            <div className="form-text" id="basic-addon4"></div>
+                            <div className="form-text text-danger" id="basic-addon4">{inputErrors['jobtitle']}</div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Start Date</label>
                             <div className="input-group">
-                                <input type="date" className="form-control rounded-1" aria-describedby="basic-addon3 basic-addon4"/>
+                                <input type="date" value={startDate} onChange={(e) => {setStartDate(e.target.value)}} className={inputErrors['startDate'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} aria-describedby="basic-addon3 basic-addon4"/>
                             </div>
-                                <div className="form-text" id="basic-addon4"></div>
+                                <div className="form-text text-danger" id="basic-addon4">{inputErrors['startDate']}</div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Department</label>
                             <div className="input-group">
-                                <select className="form-select rounded-1" aria-label="Default select example">
-                                    <option selected>Select Option</option>
-                                    <option value="1">Accounting</option>
-                                    <option value="2">Production</option>
-                                    <option value="3">Marketing</option>
+                                <select onChange={(e) => {setDepartment(e.target.value)}}  className={inputErrors['department'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} aria-label="Default select example">
+                                    <option value={department} selected>{department}</option>
+                                    <option value="Accounting">Accounting</option>
+                                    <option value="Production">Production</option>
+                                    <option value="Marketing">Marketing</option>
                                 </select>
                             </div>
-                            <div className="form-text" id="basic-addon4"></div>
+                            <div className="form-text text-danger" id="basic-addon4">{inputErrors['department']}</div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Team</label>
                             <div className="input-group">
-                                <select className="form-select rounded-1" aria-label="Default select example">
-                                    <option selected>Select Option</option>
-                                    <option value="1">Team A</option>
-                                    <option value="2">Team B</option>
-                                    <option value="3">Team C</option>
+                                <select onChange={(e) => {setTeam(e.target.value)}} className={inputErrors['team'] ? "form-control rounded-1 border-danger" : "form-control rounded-1"} aria-label="Default select example">
+                                    <option value={team} selected>{team}</option>
+                                    <option value="Team A">Team A</option>
+                                    <option value="Team B">Team B</option>
+                                    <option value="Team C">Team C</option>
                                 </select>
                             </div>
-                            <div className="form-text" id="basic-addon4"></div>
+                            <div className="form-text text-danger" id="basic-addon4">{inputErrors['team']}</div>
                         </div>
-                        <button className="btn btn-dark rounded-1 mt-4 float-end">Save</button>
+                            
+                        <button className="btn btn-dark rounded-1 mt-4 float-end" onClick={handleAddUserCompanyDetails}>Save</button>
                     </div>
                         
                     <div className="col-lg-8 mt-5 bg-white" >

@@ -92,6 +92,8 @@ Route::group(['middleware' => ['admin']], function(){
     
     Route::get('/singleuser',[UserController::class,'getsingleuserinfo'])->middleware(['auth','verified']);
 
+    Route::post('/addusercompanydetails',[UserController::class,'addcompanydetailsprocess'])->middleware(['auth','verified']);
+
 });
 
 Auth::routes(['verify' => true]);

@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\User;
 use Inertia\Inertia;
+use Inertia\Response;
 use Psy\Readline\Hoa\Event;
 use Illuminate\Http\Request;
 use App\Mail\NewUserCredential;
+use App\Models\UserCompanyDetails;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Validation\Rules\Password;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
@@ -114,7 +118,7 @@ class UserController extends Controller
        ]);
 
       
-      Mail::to($miniuseremail)->send(new NewUserCredential($minusername,$adminname,$employee_id ,$miniuseremail, $url ));
+      // Mail::to($miniuseremail)->send(new NewUserCredential($minusername,$adminname,$employee_id ,$miniuseremail, $url ));
 
     } 
 
@@ -224,15 +228,112 @@ class UserController extends Controller
 
   }
 
-  public function getsingleuserinfo(Request $request){
+  public function getsingleuserinfo(Request $request): Response{
 
-    $userid =  $request->input('idForSelection');
+        $userid =  $request->input('id');
+        
+        $employeeid =  $request->input('id');
 
-    return Inertia::render('UserInfo',[
+        if($userid == null){
 
-      'userid' => $userid
+          return inertia::render('Error403');
 
-    ]);
+        }
 
+        $company_id = Auth::user()->company_id;
+
+       
+        return Inertia::render('UserInfo',[
+
+            'userbasicinfo' => User::where('company_id', $company_id)
+                              ->where('role','employee')
+                              ->where('employee_id',$userid)
+                              ->get(), 
+
+            'companydetails' => UserCompanyDetails::where('company_id', $company_id)
+                                  ->where('role','employee')
+                                  ->where('employee_id',$userid)
+                                  ->get(), 
+
+                   
+                                      
+
+        ]);
+
+    
   }
+
+    public function addcompanydetailsprocess(Request $request){
+
+        $employee_id = $request->input('employeeid');
+        $company_id = $request->input('companyid');
+        $currentemail =  $request->input('defaultEmail');
+        $possiblenewemail = $request->input('email');
+
+        if($currentemail != $possiblenewemail){
+
+              $request->validate([
+
+                'email' => ['required','email','unique:users,email'],
+              
+              ]);
+
+        }
+       
+        $request->validate([
+
+           
+            'firstName' => ['required'],
+            'lastName' => ['required'],
+            'contactNumber' => ['required','min:10','max:10'],
+            'birthdate' => ['required'],
+            'role' => ['required'],
+            'gender' => ['required'],
+            'addressline' => ['required'],
+            'city' => ['required'],
+            'state' => ['required'],
+            'country' => ['required'],
+            'postal' => ['required','min:4','max:4'],
+            'jobtitle' => ['required'],
+            'startDate' => ['required','after:today'],
+            'department' => ['required'],
+            'team' => ['required']
+
+        ]);
+
+        User::where('company_id',$company_id)
+                          ->where('employee_id',$employee_id)
+                          ->update([
+
+                            'firstname' => $request->input('firstName'),
+                            'lastname' => $request->input('lastName'),
+                            'email' =>  $request->input('email'),
+                            'contactnumber' => $request->input('contactNumber')
+                
+                        ]);
+        
+        UserCompanyDetails::updateOrCreate(
+
+            ['company_id' => $company_id , 'employee_id' => $employee_id],
+
+            [ 
+              
+              'birthdate' => $request->input('birthdate'),
+              'role' => $request->input('role'),
+              'gender' => $request->input('gender'),
+              'addressline' => $request->input('addressline'),
+              'city' => $request->input('city'),
+              'state' => $request->input('state'),
+              'postal' => $request->input('postal'),
+              'jobtitle' => $request->input('jobtitle'),
+              'startdate' => $request->input('startDate'),
+              'department' => $request->input('department'),
+              'team' => $request->input('team'),
+              
+            ]
+
+        );
+
+
+    }
 }
