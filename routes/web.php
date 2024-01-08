@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\JobScheduleController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -60,29 +61,9 @@ Route::group(['middleware' => ['admin']], function(){
 
     Route::get('/home',[DashboardController::class,'dashboard'])->middleware(['auth','verified'])->name('mainpage');
 
-    Route::post('/getprofiledata',[ProfileController::class,'edit'])->middleware(['auth','verified']);
+   
+
     
-    Route::get('/adminprofile',function(){
-
-        return Inertia::render('AdminProfile');
-
-    })->middleware(['auth','verified'])->name('admin.profile');
-
-    Route::post('/editadminprofile',[ProfileController::class,'update'])->middleware(['auth','verified']);
-
-
-    Route::get('/verifynewemail{token}',function(){
-
-        return Inertia::render('NewEmailVerified',[
-
-            'status' => session('status')
-        ]);
-        
-    })->middleware(['auth','verified'])->name('verify.newemail');;
-
-    Route::post('/verifynewemailprocess',[ProfileController::class,'changeemail'])->middleware(['auth','verified']);
-
-    Route::post('/changepassword',[PasswordController::class,'update'])->middleware(['auth','verified']);
 
     Route::get('/users',[UserController::class,'userviews'])->middleware(['auth','verified']);
 
@@ -91,10 +72,42 @@ Route::group(['middleware' => ['admin']], function(){
     Route::get('/finduser',[UserController::class,'searchuser'])->middleware(['auth','verified']);
     
     Route::get('/singleuser',[UserController::class,'getsingleuserinfo'])->middleware(['auth','verified']);
-
+   
     Route::post('/addusercompanydetails',[UserController::class,'addcompanydetailsprocess'])->middleware(['auth','verified']);
+   
+    Route::post('/addjobsched',[JobScheduleController::class,'add'])->middleware(['auth','verified']);
 
+    Route::post('/getjobscheddata',[JobScheduleController::class,'show'])->middleware(['auth','verified']);
 });
+
+Route::post('/verifynewemailprocess',[ProfileController::class,'changeemail'])->middleware(['auth','verified']);
+
+Route::post('/editadminprofile',[ProfileController::class,'update'])->middleware(['auth','verified']);
+
+Route::get('/verifynewemail{token}',function(){
+
+    return Inertia::render('NewEmailVerified',[
+
+        'status' => session('status')
+    ]);
+    
+})->middleware(['auth','verified'])->name('verify.newemail');
+
+Route::post('/getprofiledata',[ProfileController::class,'edit'])->middleware(['auth','verified']);
+
+Route::get('/adminprofile',function(){
+
+    return Inertia::render('AdminProfile');
+
+})->middleware(['auth','verified'])->name('admin.profile');
+
+Route::post('/changepassword',[PasswordController::class,'update'])->middleware(['auth','verified']);
+
+Route::get('/employeepage',function(){
+
+    return Inertia::render('MiniUser');
+
+})->middleware(['auth','verified']);
 
 Auth::routes(['verify' => true]);
 

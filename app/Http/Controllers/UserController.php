@@ -230,11 +230,9 @@ class UserController extends Controller
 
   public function getsingleuserinfo(Request $request): Response{
 
-        $userid =  $request->input('id');
-        
-        $employeeid =  $request->input('id');
-
-        if($userid == null){
+        $primary_id = $request->input('id');
+       
+        if($primary_id == null){
 
           return inertia::render('Error403');
 
@@ -247,24 +245,28 @@ class UserController extends Controller
 
             'userbasicinfo' => User::where('company_id', $company_id)
                               ->where('role','employee')
-                              ->where('employee_id',$userid)
+                              ->where('id',$primary_id)
                               ->get(), 
 
-            'companydetails' => UserCompanyDetails::where('company_id', $company_id)
-                                  ->where('role','employee')
-                                  ->where('employee_id',$userid)
-                                  ->get(), 
+            'companydetails' =>  User::find($primary_id)->companydetails,
 
-                   
+            'jobscheduledata' => User::find($primary_id)->jobschedule
                                       
 
         ]);
+
+      //   return Inertia::render('UserCalendar',[
+
+      //     'jobscheduledata' => User::find($primary_id)->jobschedule
+                                    
+
+      // ]);
 
     
   }
 
     public function addcompanydetailsprocess(Request $request){
-
+        $primary_id = $request->input('primaryid');
         $employee_id = $request->input('employeeid');
         $company_id = $request->input('companyid');
         $currentemail =  $request->input('defaultEmail');
@@ -314,10 +316,12 @@ class UserController extends Controller
         
         UserCompanyDetails::updateOrCreate(
 
-            ['company_id' => $company_id , 'employee_id' => $employee_id],
+            ['user_id' => $primary_id],
 
             [ 
               
+              'company_id' =>  $company_id,
+              'employee_id' =>  $employee_id ,
               'birthdate' => $request->input('birthdate'),
               'role' => $request->input('role'),
               'gender' => $request->input('gender'),

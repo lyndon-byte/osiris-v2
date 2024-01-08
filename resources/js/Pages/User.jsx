@@ -284,7 +284,7 @@ export default function User(users){
                                                      <td className="p-4">{data.lastname}</td>
                                                      <td className="p-4">{data.email}</td>
                                                      <td className="p-4">+63{data.contactnumber}</td>
-                                                     <td className="text-center"><button className="btn btn-dark mt-2 rounded-1" onClick={() => {setIdForSelection(data.employee_id)}}><i className="fa-regular fa-eye"></i> </button></td>
+                                                     <td className="text-center"><button className="btn btn-dark mt-2 rounded-1" onClick={() => {setIdForSelection(data.id)}}><i className="fa-regular fa-eye"></i> </button></td>
                                                </tr>
                                             ))
 

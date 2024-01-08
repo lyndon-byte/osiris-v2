@@ -27,6 +27,6 @@ class isAdmin
        
        //test change it to miniusers mainpage 
        //redirect here if role was not admin
-       return redirect('/');
+       return redirect('/employeepage');
     }
 }

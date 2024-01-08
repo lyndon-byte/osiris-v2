@@ -12,6 +12,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 function AdminProfile(status){
+
+
     const [companyId,setCompanyId] = useState('')
     const [firstName,setFirstName] = useState('');
     const [lastName,setLastName] = useState('');
@@ -25,7 +27,6 @@ function AdminProfile(status){
     const [showNewPassword,setShowNewPassword] = useState(false);
     const [showConfirmNewPassword,setShowConfirmNewPassword] = useState(false);
     const [showChangePasswordSuccess,setShowChangePasswordSuccess] = useState(false)
-    
     const [current_password,setCurrentPassword] = useState("");
     const [passwordStrength,setPasswordStrength] = useState(false);
     const [passwordMax,setPasswordMax] = useState(false);
@@ -34,7 +35,6 @@ function AdminProfile(status){
     const [passwordSpecialChar,setPasswordSpecialChar] = useState(false)
     const [password_confirmation,setPassword_Confirmation] = useState("");
     const [password,setPassword] = useState('');
-
     const [showModalForEmailChange,setShowModalForEmailChange] = useState(false);
     const [showModalForEmailLinkSent,setShowModalForEmailLinkSent] = useState(false);
     const [showModalForChangePassword,setShowModalForChangePassword] = useState(false);
@@ -209,6 +209,7 @@ function AdminProfile(status){
                   } catch(error){
       
                       setInputError(error.response.data.errors)
+                      setShowModalForEmailChange(false);  
                   }
 
             }else{

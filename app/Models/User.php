@@ -14,6 +14,8 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+   
+
     public $timestamps = false;
     
     public $incrementing = false;
@@ -60,7 +62,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function companydetails() 
     {
 
-       return $this->hasOne(UserCompanyDetails::class,'company_id','employee_id');
+       return $this->hasOne(UserCompanyDetails::class);
+       
+    }
+
+    public function jobschedule() 
+    {
+
+       return $this->hasOne(workschedule::class);
        
     }
 }

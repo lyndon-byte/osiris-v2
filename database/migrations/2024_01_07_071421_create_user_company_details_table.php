@@ -18,6 +18,7 @@ return new class extends Migration
         Schema::create('user_company_details', function (Blueprint $table) {
             
             $table->id();
+            $table->string('user_id');
             $table->string('company_id');
             $table->string('employee_id');
             $table->string('role');

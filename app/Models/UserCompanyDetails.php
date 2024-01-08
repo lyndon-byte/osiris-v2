@@ -11,7 +11,7 @@ class UserCompanyDetails extends Model
 
     protected $fillable = [
 
-        
+        'user_id',
         'company_id',
         'employee_id',
         'role',

@@ -2,16 +2,26 @@ import React from "react";
 import { usePage , useForm , router } from "@inertiajs/react";
 import axios from "axios";
 import { useEffect, useState} from "react";
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import TimePicker from 'react-time-picker';
+import 'react-time-picker/dist/TimePicker.css';
+import 'react-clock/dist/Clock.css';
 import DashboardNavbar from "./components/DashBoardNavbar";
-import UserCalendar from './components/UserCalendar';
+import UserCalendar from './UserCalendar';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+
 
 
 export default function UserInfo(){
 
     const userbasicinfo = usePage().props.userbasicinfo
     const companydetails = usePage().props.companydetails
+    const jobscheddata = usePage().props.jobscheduledata
+
+    const [primaryid,setPrimaryidId] = useState(userbasicinfo[0].id)
     const [defaultEmail,setDefaultEmail] = useState(userbasicinfo[0].email)
     const [companyid,setCompanyId] = useState(userbasicinfo[0].company_id)
     const [employeeid,setEmployeeId] = useState(userbasicinfo[0].employee_id)
@@ -34,16 +44,50 @@ export default function UserInfo(){
     const [active,setActive] = useState(false)
     const [seconds,setSeconds] = useState(0)
     const [inputErrors,setInputErrors] = useState('')
+    const [showModalForJobSched,setShowModalForJobSched] = useState(false)
+    const [startTime,setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
+    const [restDay1,setRestDay1] = useState('');
+    const [restDay2,setRestDay2] = useState('');
 
+    const [jobdata1,setJobData1] = useState('')
+    const [formattedTime1,setFormattedTime1] = useState('')
+    const [formattedTime2,setFormattedTime2] = useState('')
 
+    const [jobdata2,setJobData2] = useState('')
+    const [jobdata3,setJobData3] = useState('')
+    const [jobdata4,setJobData4] = useState('')
+    const [day,setDay] = useState(
+
+        {0: 'Saturday', 1: 'Sunday', 2: 'Monday', 3: 'Tuesday',4: 'Wednesday',5: 'Thursday', 6: 'Friday'}
+
+    )    
 
     useEffect(() => {
 
-        console.log(inputErrors)
+        function convertTo12HourFormat(time24) {
+            const [hours, minutes, seconds] = time24.split(':').map(Number);
+            const period = hours >= 12 ? 'PM' : 'AM';
+          
+            let hours12 = hours % 12;
+            hours12 = hours12 === 0 ? 12 : hours12; 
+          
+            return `${hours12}:${minutes}${seconds} ${period}`;
+          }
+          
+          const time24 = jobdata1;
+          const time12 = convertTo12HourFormat(time24);
 
-    },[inputErrors])
+          const secondtime24 = jobdata2;
+          const secondtime12 = convertTo12HourFormat(secondtime24);
+          
+          setFormattedTime1(time12)
+          setFormattedTime2(secondtime12)
 
+    },[jobdata1])
+    
 
+    
     useEffect(() =>{
         console.log(seconds)
         if(seconds == 2){
@@ -56,24 +100,46 @@ export default function UserInfo(){
     useEffect(() => {
 
        try{
-            setBirthDate(companydetails[0].birthdate)
-            setGender(companydetails[0].gender)
-            setAddressline(companydetails[0].addressline)
-            setCity(companydetails[0].city)
-            setState(companydetails[0].state)
-            setPostal(companydetails[0].postal)
-            setJobTitle(companydetails[0].jobtitle)
-            setStartDate(companydetails[0].startdate)
-            setDepartment(companydetails[0].department)
-            setTeam(companydetails[0].team)
 
+
+            
+            setBirthDate(companydetails.birthdate)
+            setGender(companydetails.gender)
+            setAddressline(companydetails.addressline)
+            setCity(companydetails.city)
+            setState(companydetails.state)
+            setPostal(companydetails.postal)
+            setJobTitle(companydetails.jobtitle)
+            setStartDate(companydetails.startdate)
+            setDepartment(companydetails.department)
+            setTeam(companydetails.team)
+            
+            
+
+              
        }catch(error){
 
             console.log(error)
        }
         
     },[])
-   
+    
+    useEffect(() => {
+
+        try{
+
+            setJobData1(jobscheddata.starts_at)
+            setJobData2(jobscheddata.ends_at)
+            setJobData3(jobscheddata.restday1)
+            setJobData4(jobscheddata.restday2)
+            
+
+        }catch(error){
+            
+            console.log(error)
+        }
+
+    },[])
    
     const showToastMessage = () => {
 
@@ -82,6 +148,19 @@ export default function UserInfo(){
         })
 
     };
+    
+    // useEffect(() => {
+
+    //    try{
+
+    //         router.post('/getjobscheddata',{primaryid})
+
+    //    }catch(error){
+
+    //         console.log(error)
+    //    }
+
+    // },[])
 
     const handleAddUserCompanyDetails = async () => {
 
@@ -93,6 +172,7 @@ export default function UserInfo(){
                  await axios.post('/addusercompanydetails',
 
                         {
+                                        primaryid,
                                         companyid,
                                         employeeid,
                                         firstName,
@@ -141,13 +221,119 @@ export default function UserInfo(){
 
     }
 
-   
+   const showJobSchedModal = () => {
+
+
+        setShowModalForJobSched(true)
+
+   }
+
+   const handleCloseWorkSchedModal = () => {
+
+        setShowModalForJobSched(false)
+
+   }
+
+   const handleAddWorkSched = async () => {
+
+
+       try {
+
+        await axios.post('/addjobsched',{primaryid,startTime,endTime,restDay1,restDay2}).then(() =>{
+
+
+        showToastMessage();
+                       
+           setInterval(() => {
+                               
+                setSeconds(seconds => seconds + 1);
+                            
+            }, 1000);
+            setShowModalForJobSched(false)
+
+        })
+
+       }catch(error){
+
+            setInputErrors(error.response.data.errors)
+
+       }
+   }
+
 
     return (
         
         
         <>  
-
+            <Modal
+                    show={showModalForJobSched}
+                    onHide={handleCloseWorkSchedModal}
+                    backdrop="static"
+                    keyboard={false}
+                >
+                    <Modal.Header closeButton>
+                            Set Work Schedule
+                    </Modal.Header>
+                    <Modal.Body style={{fontSize: "14px"}} className="p-5">
+                            
+                        <div class="mb-3">
+                            <label class="form-label">Shift Start Time</label>
+                            <div class="input-group">
+                               
+                                <input type="time" onChange={(e) => setStartTime(e.target.value)} className={inputErrors['startTime'] ? "form-control border-danger" : "form-control"}  aria-describedby="basic-addon3 basic-addon4"/>
+                            </div>
+                            <div class="form-text text-danger" id="basic-addon4">{inputErrors['startTime']}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">End of Shift Time</label>
+                            <div class="input-group">
+                               
+                                <input type="time" onChange={(e) => setEndTime(e.target.value)}  className={inputErrors['endTime'] ? "form-control border-danger" : "form-control"}  aria-describedby="basic-addon3 basic-addon4"/>
+                            </div>
+                            <div class="form-text text-danger" id="basic-addon4">{inputErrors['endTime']}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Rest Day 1</label>
+                            <div class="input-group">
+                               
+                                <select onChange={(e) => setRestDay1(e.target.value)} class="form-select" aria-label="Default select example">
+                                    <option selected>Select Day</option>
+                                    <option value="1">Sunday</option>
+                                    <option value="2">Monday</option>
+                                    <option value="3">Tuesday</option>
+                                    <option value="4">Wednesday</option>
+                                    <option value="5">Thursday</option>
+                                    <option value="6">Friday</option>
+                                    <option value="0">Saturday</option>
+                                </select>
+                            </div>
+                            <div class="form-text" id="basic-addon4"></div>
+                        </div>  
+                        <div class="mb-3">
+                            <label class="form-label">Rest Day 2</label>
+                            <div class="input-group">
+                               
+                                <select class="form-select" onChange={(e) => setRestDay2(e.target.value)}  aria-label="Default select example">
+                                    <option selected>Select Day</option>
+                                    <option value="1">Sunday</option>
+                                    <option value="2">Monday</option>
+                                    <option value="3">Tuesday</option>
+                                    <option value="4">Wednesday</option>
+                                    <option value="5">Thursday</option>
+                                    <option value="6">Friday</option>
+                                    <option value="0">Saturday</option>
+                                </select>
+                            </div>
+                            <div class="form-text" id="basic-addon4"></div>
+                        </div>  
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="dark rounded-1" style={{fontSize: "14px"}} onClick={handleAddWorkSched}>
+                            save
+                        </Button>
+                   
+                    </Modal.Footer>
+            </Modal>
             <ToastContainer></ToastContainer>
             <DashboardNavbar></DashboardNavbar>
             <div className="container mt-5" style={{marginBottom: "150px"}}>
@@ -339,30 +525,30 @@ export default function UserInfo(){
                             <div className="tab-pane fade show active" id="schedule-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
                                   
                                 <div className="col-lg-11 m-auto ">
-                                    <button className="btn btn-outline-primary border-0 float-end"><i className="fa-solid fa-gear"></i> Configure</button>
+                                    <button className="btn btn-outline-primary border-0 float-end" onClick={showJobSchedModal}><i className="fa-solid fa-gear"></i> Configure</button>
                                         <h6 className="mb-4 text-muted mt-5" >Current Job Schedule</h6>
                                         <div className="table-responsive ">
                                             <table className="table shadow-sm " >
                                             
-                                                    <thead>
+                                                    <thead >
                                                         <tr >
                                                         
                                                         
-                                                            <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>Shift Start</th>
-                                                            <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>End Of Shift </th>
-                                                            <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>Rest Day 1</th>
-                                                            <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>Rest Day 2</th>
+                                                            <th scope="col" className="bg-info text-white fw-medium text-center" style={{fontSize: "15px"}}>Shift Start</th>
+                                                            <th scope="col" className="bg-info text-white fw-medium text-center" style={{fontSize: "15px"}}>End Of Shift </th>
+                                                            <th scope="col" className="bg-info text-white fw-medium text-center" style={{fontSize: "15px"}}>Rest Day 1</th>
+                                                            <th scope="col" className="bg-info text-white fw-medium text-center" style={{fontSize: "15px"}}>Rest Day 2</th>
                                                         
                                                         </tr>
                                                     </thead>
                                                     <tbody>
 
                                                         <tr >
-                                                        
-                                                            <td className="text-muted" style={{fontSize: "14px"}}>Not Se asdasdsadt</td>
-                                                            <td className="text-muted" style={{fontSize: "14px"}}>Notasdasd Set</td>
-                                                            <td className="text-muted" style={{fontSize: "14px"}}>Noasdasdast Set</td>
-                                                            <td className="text-muted" style={{fontSize: "14px"}}>Notasdasd Set</td>
+                                                          
+                                                            <td className="text-muted text-center" style={{fontSize: "14px"}}>{jobdata1 ? formattedTime1 : 'none'}</td>
+                                                            <td className="text-muted text-center" style={{fontSize: "14px"}}>{jobdata2 ? formattedTime2 : 'none'}</td>
+                                                            <td className="text-muted text-center" style={{fontSize: "14px"}}>{jobdata3 ? day[jobdata3] : 'none'}</td>
+                                                            <td className="text-muted text-center" style={{fontSize: "14px"}}>{jobdata4 ? day[jobdata4] : 'none'}</td>
                                                             
                                                             
                                                         </tr>
@@ -373,7 +559,7 @@ export default function UserInfo(){
                                   
                                         </div>
                                        
-                                       <UserCalendar></UserCalendar>
+                                       <UserCalendar firstrestday={jobdata3} secondrestday={jobdata4}></UserCalendar>
                                         
                                 </div> 
                             </div>
