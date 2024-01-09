@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobScheduleController;
 use App\Http\Controllers\Auth\PasswordController;
@@ -103,11 +104,12 @@ Route::get('/adminprofile',function(){
 
 Route::post('/changepassword',[PasswordController::class,'update'])->middleware(['auth','verified']);
 
-Route::get('/employeepage',function(){
+Route::get('/employeepage',[EmployeeController::class,'showinfo'])->middleware(['auth','verified']);
 
-    return Inertia::render('MiniUser');
+Route::post('/addtimein',[EmployeeController::class,'timein'])->middleware(['auth','verified']);
 
-})->middleware(['auth','verified']);
+Route::get('/myattendance',[EmployeeController::class,'attendance'])->middleware(['auth','verified']);
+
 
 Auth::routes(['verify' => true]);
 

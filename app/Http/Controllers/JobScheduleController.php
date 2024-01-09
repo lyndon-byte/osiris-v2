@@ -46,5 +46,12 @@ class JobScheduleController extends Controller
 
          ]);  
 
+
+
+    }
+
+    public function calculateAttendance()
+    {
+
     }
 }
