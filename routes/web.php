@@ -62,10 +62,6 @@ Route::group(['middleware' => ['admin']], function(){
 
     Route::get('/home',[DashboardController::class,'dashboard'])->middleware(['auth','verified'])->name('mainpage');
 
-   
-
-    
-
     Route::get('/users',[UserController::class,'userviews'])->middleware(['auth','verified']);
 
     Route::post('/addminiuser',[UserController::class,'addemployee'])->middleware(['auth','verified']);
@@ -79,6 +75,9 @@ Route::group(['middleware' => ['admin']], function(){
     Route::post('/addjobsched',[JobScheduleController::class,'add'])->middleware(['auth','verified']);
 
     Route::post('/getjobscheddata',[JobScheduleController::class,'show'])->middleware(['auth','verified']);
+
+    Route::post('/changevent',[JobScheduleController::class,'changecalendarevent'])->middleware(['auth','verified']);
+
 });
 
 Route::post('/verifynewemailprocess',[ProfileController::class,'changeemail'])->middleware(['auth','verified']);
@@ -110,6 +109,9 @@ Route::post('/addtimein',[EmployeeController::class,'timein'])->middleware(['aut
 
 Route::get('/myattendance',[EmployeeController::class,'attendance'])->middleware(['auth','verified']);
 
+Route::get('/mypayroll',[EmployeeController::class,'payslip'])->middleware(['auth','verified']);
+
+Route::get('/timeoffrequest',[EmployeeController::class,'timeoff'])->middleware(['auth','verified']);
 
 Auth::routes(['verify' => true]);
 

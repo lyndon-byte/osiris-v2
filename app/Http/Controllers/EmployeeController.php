@@ -8,6 +8,7 @@ use App\Models\TimeIn;
 use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
 use App\Models\UserAttendance;
+use App\Models\EmployeeCalendar;
 use Illuminate\Support\Facades\Auth;
 use Stevebauman\Location\Facades\Location;
 
@@ -92,9 +93,7 @@ class EmployeeController extends Controller
                                                                     
                                                                     ]);
                
-               
-
-            }
+                }
 
         }else{
 
@@ -117,6 +116,10 @@ class EmployeeController extends Controller
                     'timein_status' => 'Late',
                     'date' => $timein,
                 ]);
+
+                EmployeeCalendar::where('user_id',$primary_id)
+                                   ->where('event_date',$date)
+                               ->update([ 'title' => 'Late' ]);
             }
             else {
 
@@ -127,6 +130,10 @@ class EmployeeController extends Controller
                     'timein_status' => 'Present',
                     'date' => $timein,
                 ]);
+
+                EmployeeCalendar::where('user_id',$primary_id)
+                                   ->where('event_date',$date)
+                               ->update([ 'title' => 'Present' ]);
             }
         };
 
@@ -141,10 +148,73 @@ class EmployeeController extends Controller
 
         $primary_id = Auth::user()->id;
 
+        $presentcountpermonth = UserAttendance::where('user_id',$primary_id)
+                            ->where('timein_status','Present')
+                            ->whereYear('date',Carbon::now()->year)
+                            ->whereMonth('date',Carbon::now()->month)
+                            ->orWhere([
+                                
+                                ['user_id',$primary_id],
+                                ['timein_status','Late']
+                               
+                            ])
+                            ->whereYear('date',Carbon::now()->year)
+                            ->whereMonth('date',Carbon::now()->month)    
+                            ->count();
+
+        $latecountpermonth = UserAttendance::where('user_id',$primary_id)
+                            ->where('timein_status','Late')
+                            ->whereYear('date',Carbon::now()->year)
+                            ->whereMonth('date',Carbon::now()->month)
+                            ->count();     
+                            
+        $absentcountpermonth = UserAttendance::where('user_id',$primary_id)
+                            ->where('timein_status','Absent')
+                            ->whereYear('date',Carbon::now()->year)
+                            ->whereMonth('date',Carbon::now()->month)
+                            ->count();     
+
+        $previousMonths = [];
+
+        $currentDate = Carbon::now()->startOfMonth();
+        while ($currentDate->year == Carbon::now()->year) {
+                $previousMonths[] = $currentDate->format('F');
+                $currentDate->subMonth();
+        }                     
+
+        
+
         return Inertia::render('Attendance',[
 
-            'attendanceinfo' => User::find($primary_id)->attendance
+            'attendanceinfo' => User::find($primary_id)->attendance,
+
+            'presentcountpermonth' => $presentcountpermonth,
+
+            'latecountpermonth' =>   $latecountpermonth,
+
+            'absentcountpermonth' => $absentcountpermonth,
+
+            'months' => $previousMonths
 
         ]);
+    }
+
+    public function payslip(Request $request){
+
+        return Inertia::render('Payslip');
+
+    }
+
+    public function timeoff(Request $request){
+
+        $primary_id = Auth::user()->id;
+
+
+        return Inertia::render('TimeOff',[
+            
+            'jobscheduledata' => User::find($primary_id)->jobschedule
+
+        ]);
+
     }
 }

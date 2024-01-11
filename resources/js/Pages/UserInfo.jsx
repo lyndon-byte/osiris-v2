@@ -20,7 +20,10 @@ export default function UserInfo(){
     const userbasicinfo = usePage().props.userbasicinfo
     const companydetails = usePage().props.companydetails
     const jobscheddata = usePage().props.jobscheduledata
-
+    const employeecalendar = usePage().props.employeecalendar
+    const timeoffcredits = usePage().props.timeoffbalance
+    const attendance = usePage().props.attendance
+    const [attendanceArray,setAttendanceArray] = useState([])
     const [primaryid,setPrimaryidId] = useState(userbasicinfo[0].id)
     const [defaultEmail,setDefaultEmail] = useState(userbasicinfo[0].email)
     const [companyid,setCompanyId] = useState(userbasicinfo[0].company_id)
@@ -57,11 +60,23 @@ export default function UserInfo(){
     const [jobdata2,setJobData2] = useState('')
     const [jobdata3,setJobData3] = useState('')
     const [jobdata4,setJobData4] = useState('')
+    const [workDaysThisYear,setWorkDaysThisYear] = useState([])
     const [day,setDay] = useState(
 
-        {0: 'Saturday', 1: 'Sunday', 2: 'Monday', 3: 'Tuesday',4: 'Wednesday',5: 'Thursday', 6: 'Friday'}
+        {6: 'Saturday', 7: 'Sunday', 1: 'Monday', 2: 'Tuesday',3: 'Wednesday',4: 'Thursday', 5: 'Friday'}
 
     )    
+    const [test1,settest1] = useState(1)
+    const [test2,settest2] = useState(2)
+
+    useEffect(() =>{
+
+        if(attendance){
+
+            setAttendanceArray(attendance)
+        }
+
+    },[])
 
     useEffect(() => {
 
@@ -149,19 +164,7 @@ export default function UserInfo(){
 
     };
     
-    // useEffect(() => {
-
-    //    try{
-
-    //         router.post('/getjobscheddata',{primaryid})
-
-    //    }catch(error){
-
-    //         console.log(error)
-    //    }
-
-    // },[])
-
+    
     const handleAddUserCompanyDetails = async () => {
 
         setInputErrors('')
@@ -234,30 +237,78 @@ export default function UserInfo(){
 
    }
 
+ useEffect(() =>{
+
+    setWorkDaysThisYear(employeecalendar)
+
+ },[])
+  
+
+  useEffect(() =>{
+
+        const  getAllDatesExceptRestDayStartingFromStartDay = (startDate) => {
+            
+                
+            const currentYear = startDate.getFullYear();
+            const allDates = [];
+          
+            let currentMonth = startDate.getMonth();
+            let currentDay = startDate.getDate();
+          
+            for (let month = currentMonth; month < 12; month++) {
+              for (let day = currentDay; day <= 31; day++) {
+                const date = new Date(currentYear, month, day);
+          
+                // Check if the date is a Monday or Tuesday
+                if (date.getDay() != restDay1 && date.getDay() != restDay2) {
+                  allDates.push(date.getFullYear() + "-" + parseInt(date.getMonth() + 1) + "-" + date.getDate()  );
+                }
+          
+                // Break the loop if we've reached the end of the month
+                if (date.getMonth() !== month) {
+                  break;
+                }
+              }
+          
+              // Reset the start day for the next month
+              currentDay = 1;
+            }
+          
+            return allDates;
+
+        }
+        
+        const startDate = new Date(companydetails ? companydetails.startdate : '');
+        const resultDates = getAllDatesExceptRestDayStartingFromStartDay(startDate);
+        setWorkDaysThisYear(resultDates);
+        
+  },[restDay1,restDay2])
+
    const handleAddWorkSched = async () => {
 
+       
+        
+        try {
 
-       try {
-
-        await axios.post('/addjobsched',{primaryid,startTime,endTime,restDay1,restDay2}).then(() =>{
+            await axios.post('/addjobsched',{primaryid,startTime,endTime,restDay1,restDay2,workDaysThisYear}).then(() =>{
 
 
-        showToastMessage();
-                       
-           setInterval(() => {
-                               
-                setSeconds(seconds => seconds + 1);
-                            
-            }, 1000);
-            setShowModalForJobSched(false)
+            showToastMessage();
+                        
+            setInterval(() => {
+                                
+                    setSeconds(seconds => seconds + 1);
+                                
+                }, 1000);
+                setShowModalForJobSched(false)
 
-        })
+            })
 
-       }catch(error){
+        }catch(error){
 
-            setInputErrors(error.response.data.errors)
+                setInputErrors(error.response.data.errors)
 
-       }
+        }
    }
 
 
@@ -296,35 +347,35 @@ export default function UserInfo(){
                             <label class="form-label">Rest Day 1</label>
                             <div class="input-group">
                                
-                                <select onChange={(e) => setRestDay1(e.target.value)} class="form-select" aria-label="Default select example">
+                                <select onChange={(e) => setRestDay1(e.target.value)} class={inputErrors['restDay1'] ? "form-select border-danger" : "form-select"} aria-label="Default select example">
                                     <option selected>Select Day</option>
-                                    <option value="1">Sunday</option>
-                                    <option value="2">Monday</option>
-                                    <option value="3">Tuesday</option>
-                                    <option value="4">Wednesday</option>
-                                    <option value="5">Thursday</option>
-                                    <option value="6">Friday</option>
-                                    <option value="0">Saturday</option>
+                                    <option value="7">Sunday</option>
+                                    <option value="1">Monday</option>
+                                    <option value="2">Tuesday</option>
+                                    <option value="3">Wednesday</option>
+                                    <option value="4">Thursday</option>
+                                    <option value="5">Friday</option>
+                                    <option value="6">Saturday</option>
                                 </select>
                             </div>
-                            <div class="form-text" id="basic-addon4"></div>
+                            <div class="form-text text-danger" id="basic-addon4">{inputErrors['restDay1']}</div>
                         </div>  
                         <div class="mb-3">
                             <label class="form-label">Rest Day 2</label>
                             <div class="input-group">
                                
-                                <select class="form-select" onChange={(e) => setRestDay2(e.target.value)}  aria-label="Default select example">
+                                <select class={inputErrors['restDay2'] ? "form-select border-danger" : "form-select" } onChange={(e) => setRestDay2(e.target.value)}  aria-label="Default select example">
                                     <option selected>Select Day</option>
-                                    <option value="1">Sunday</option>
-                                    <option value="2">Monday</option>
-                                    <option value="3">Tuesday</option>
-                                    <option value="4">Wednesday</option>
-                                    <option value="5">Thursday</option>
-                                    <option value="6">Friday</option>
-                                    <option value="0">Saturday</option>
+                                    <option value="7">Sunday</option>
+                                    <option value="1">Monday</option>
+                                    <option value="2">Tuesday</option>
+                                    <option value="3">Wednesday</option>
+                                    <option value="4">Thursday</option>
+                                    <option value="5">Friday</option>
+                                    <option value="6">Saturday</option>
                                 </select>
                             </div>
-                            <div class="form-text" id="basic-addon4"></div>
+                            <div class="form-text text-danger" id="basic-addon4">{inputErrors['restDay2']}</div>
                         </div>  
                     </Modal.Body>
                     <Modal.Footer>
@@ -559,7 +610,7 @@ export default function UserInfo(){
                                   
                                         </div>
                                        
-                                       <UserCalendar firstrestday={jobdata3} secondrestday={jobdata4}></UserCalendar>
+                                       <UserCalendar workdays={employeecalendar} ></UserCalendar>
                                         
                                 </div> 
                             </div>
@@ -572,7 +623,7 @@ export default function UserInfo(){
         
                                                 <div className="card-body p-4">
                                                     <h5 className="card-title">Time Off</h5>
-                                                    <h5 className="card-text mt-4">10</h5>
+                                                    <h5 className="card-text mt-4">{timeoffcredits ? timeoffcredits.timeoff  : ''}</h5>
                                                   
                                                 </div>
                                                 <div className="card-footer p-4">
@@ -586,7 +637,7 @@ export default function UserInfo(){
         
                                                 <div className="card-body p-4">
                                                     <h5 className="card-title">Sick leave</h5>
-                                                    <h5 className="card-text mt-4">10</h5>
+                                                    <h5 className="card-text mt-4">{timeoffcredits ? timeoffcredits.sickleave  : ''}</h5>
                                                   
                                                 </div>
                                                 <div className="card-footer p-4">
@@ -600,7 +651,7 @@ export default function UserInfo(){
         
                                                 <div className="card-body p-4">
                                                     <h5 className="card-title">Unpaid Leave</h5>
-                                                    <h5 className="card-text mt-4">0</h5>
+                                                    <h5 className="card-text mt-4">{timeoffcredits ? timeoffcredits.unpaid    : ''}</h5>
                                                 
                                                 </div>
                                                 <div className="card-footer p-4">
@@ -614,8 +665,13 @@ export default function UserInfo(){
                             </div>
                             
                             <div className="tab-pane fade" id="attendance-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
-
-                                <div className="table-responsive mt-5 p-4">
+                                <div className="col-lg-4 col-sm-12 p-4">
+                                    <select class="form-select mt-5" aria-label="Default select example">
+                                        <option selected>January 2024</option>
+                                       
+                                    </select>
+                                </div>
+                                <div className="table-responsive p-4">
                                         
                                         <table className="table shadow-sm " >
                                                 
@@ -623,24 +679,35 @@ export default function UserInfo(){
                                                             <tr >
                                                             
                                                             
-                                                                <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>Shift Start</th>
-                                                                <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>End Of Shift </th>
-                                                                <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>Rest Day 1</th>
-                                                                <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>Rest Day 2</th>
+                                                                <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>Status</th>
+                                                                <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>Time Out</th>
+                                                                <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>Time Out Status</th>
+                                                                <th scope="col" className="bg-info text-white fw-medium" style={{fontSize: "15px"}}>Date</th>
                                                             
                                                             </tr>
                                                         </thead>
                                                         <tbody>
 
-                                                            <tr >
+                                                           
                                                             
-                                                                <td className="text-muted" style={{fontSize: "14px"}}>Not Se asdasdsadt</td>
-                                                                <td className="text-muted" style={{fontSize: "14px"}}>Notasdasd Set</td>
-                                                                <td className="text-muted" style={{fontSize: "14px"}}>Noasdasdast Set</td>
-                                                                <td className="text-muted" style={{fontSize: "14px"}}>Notasdasd Set</td>
+                                                               {
+                                                                    attendanceArray.map((data) =>(
+
+                                                                        <>
+                                                                            <tr className="">
+                                                                                <td className="text-muted" style={{fontSize: "14px"}}>{data.timein_status}</td>
+                                                                                <td className="text-muted" style={{fontSize: "14px"}}>{data.timeout_status}</td>
+                                                                                <td className="text-muted" style={{fontSize: "14px"}}>{data.timeout_time}</td>
+                                                                                <td className="text-muted" style={{fontSize: "14px"}}>{data.date}</td>
+                                                                            </tr>
+                                                                        </>
+
+                                                                    ))
+
+                                                               }
                                                                 
                                                                 
-                                                            </tr>
+                                                            
                                                 
                                                         
                                                         </tbody>

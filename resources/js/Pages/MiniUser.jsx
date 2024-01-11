@@ -66,10 +66,10 @@ export default function MiniUser(){
             return `${hours12}:${minutes} ${period}`;
           }
           
-          const time24 = jobscheduledata.starts_at;
+          const time24 = jobscheduledata ? jobscheduledata.starts_at : '' ;
           const time12 = convertTo12HourFormat(time24);
 
-          const secondtime24 = jobscheduledata.ends_at;
+          const secondtime24 = jobscheduledata ? jobscheduledata.ends_at : '' ;
           const secondtime12 = convertTo12HourFormat(secondtime24);
           
           setFormattedTime1(time12)
@@ -135,10 +135,16 @@ export default function MiniUser(){
                                     
                     }, 1000);
                 })
+                .catch(error => (
+
+                    alert('starting date was not set yet or you didnt have schedule')
+
+                ))
+                
     
             }catch(error){
     
-                console.log(error)
+                console.log('starting date was not set yet or you didnt have schedule')
             }
         }
 

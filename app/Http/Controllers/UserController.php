@@ -8,7 +8,9 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Psy\Readline\Hoa\Event;
 use Illuminate\Http\Request;
+use App\Models\TimeOffCredits;
 use App\Mail\NewUserCredential;
+use App\Models\EmployeeCalendar;
 use App\Models\UserCompanyDetails;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -240,7 +242,8 @@ class UserController extends Controller
 
         $company_id = Auth::user()->company_id;
 
-       
+        
+
         return Inertia::render('UserInfo',[
 
             'userbasicinfo' => User::where('company_id', $company_id)
@@ -250,8 +253,13 @@ class UserController extends Controller
 
             'companydetails' =>  User::find($primary_id)->companydetails,
 
-            'jobscheduledata' => User::find($primary_id)->jobschedule
-                                      
+            'jobscheduledata' => User::find($primary_id)->jobschedule,
+                                       
+            'employeecalendar' => User::find($primary_id)->calendar,
+
+            'timeoffbalance' => User::find($primary_id)->timeoffcredits,
+
+            'attendance' => User::find($primary_id)->attendance,
 
         ]);
 
@@ -266,6 +274,7 @@ class UserController extends Controller
   }
 
     public function addcompanydetailsprocess(Request $request){
+
         $primary_id = $request->input('primaryid');
         $employee_id = $request->input('employeeid');
         $company_id = $request->input('companyid');
@@ -281,6 +290,8 @@ class UserController extends Controller
               ]);
 
         }
+
+       
        
         $request->validate([
 
@@ -302,6 +313,25 @@ class UserController extends Controller
             'team' => ['required']
 
         ]);
+
+        if(TimeOffCredits::where('user_id',$primary_id)->exists()){
+
+         
+        }else{
+
+          TimeOffCredits::insert([
+
+                'user_id' => $primary_id,
+                'company_id' =>  $company_id,
+                'timeoff' => 10,
+                'sickleave' => 10,
+                'unpaid' => 0,
+
+
+            ]);
+              
+          
+        }
 
         User::where('company_id',$company_id)
                           ->where('employee_id',$employee_id)
